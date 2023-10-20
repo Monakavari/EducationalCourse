@@ -12,5 +12,6 @@ namespace EducationalCourse.Domain.Models.Course
         public string CourseImageBase64 { get; set; }
         public int CoursePrice { get; set; }
         public bool IsFreeCost { get; set; }
+        public long ViewCount { get; set; }
     }
 }
