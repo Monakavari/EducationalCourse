@@ -6,4 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EducationalCourse.Common\EducationalCourse.Common.csproj" />
+    <ProjectReference Include="..\EducationalCourse.Dictionary\EducationalCourse.Dictionary.csproj" />
+    <ProjectReference Include="..\EducationalCourse.Domain\EducationalCourse.Domain.csproj" />
+    <ProjectReference Include="..\EducationalCourse.Framework\EducationalCourse.Framework.csproj" />
+  </ItemGroup>
+
 </Project>

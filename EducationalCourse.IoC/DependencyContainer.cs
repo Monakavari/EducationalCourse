@@ -1,7 +1,16 @@
-﻿using EducationalCourse.DataAccess.EF.Context;
+﻿using EducationalCourse.ApplicationService.Mapper;
+using EducationalCourse.ApplicationService.Services.Contracts;
+using EducationalCourse.ApplicationService.Services.Implementations;
+using EducationalCourse.Common.DTOs.Configurations;
+using EducationalCourse.DataAccess.EF.Context;
+using EducationalCourse.DataAccess.EF.Repositories.Base;
+using EducationalCourse.DataAccess.EF.Repository;
+using EducationalCourse.Domain.ICommandRepositories.Base;
+using EducationalCourse.Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Sample.DataAccess.EF.Repositories.Base;
 
 namespace EducationalCourse.IOC
 {
@@ -16,7 +25,7 @@ namespace EducationalCourse.IOC
         {
             #region Rejester SiteSettings
 
-            //services.Configure<SiteSettings>(configuration.GetSection(nameof(SiteSettings)));
+            services.Configure<SiteSettings>(configuration.GetSection(nameof(SiteSettings)));
 
             #endregion Rejester SiteSettings
 
@@ -29,22 +38,30 @@ namespace EducationalCourse.IOC
 
             #region Rejester Base
 
-            //services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-            //services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             #endregion Rejester Base
 
-            #region Rejester CommandRepositories
+            #region Rejester Repository
 
-            //services.AddScoped<IFileFormationCommandRepository, FileFormationCommandRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
-            #endregion Rejester CommandRepositories
+            #endregion Rejester Repository
 
             #region Rejester Servises
 
-            //services.AddScoped<IPatientReceptionConsoleService, PatientReceptionConsoleService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IFileManagerService, FileManagerService>();
 
             #endregion Rejester Servises
+
+            #region Rejester AutoMapper
+
+            services.AddAutoMapper(typeof(MappingUserProfile));
+
+            #endregion
+
         }
     }
 }

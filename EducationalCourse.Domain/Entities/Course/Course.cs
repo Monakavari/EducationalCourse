@@ -18,7 +18,8 @@ namespace EducationalCourse.Domain.Models.Course
         /// <summary>
         /// 
         /// </summary>
-        public string AvatarName { get; set; }
+        public string CourseImageName { get; set; }
+        public string CourseImageBase64 { get; set; }
 
         /// <summary>
         /// 

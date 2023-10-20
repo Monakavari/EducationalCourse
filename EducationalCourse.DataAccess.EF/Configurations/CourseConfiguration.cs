@@ -17,9 +17,14 @@ namespace EducationalCourse.DataAccess.EF.Configurations
                 .HasMaxLength(100);
 
             builder
-                .Property(x => x.AvatarName)
+                .Property(x => x.CourseImageName)
                 .IsRequired(true)
                 .HasMaxLength(100);
+
+            builder
+               .Property(x => x.CourseImageBase64)
+               .IsRequired(true)
+               .HasMaxLength(100); 
 
             builder
                 .HasOne(x => x.CourseGroup)

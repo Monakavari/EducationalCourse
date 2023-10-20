@@ -1,4 +1,4 @@
-﻿using EducationalCourse.Domain.Models.User;
+﻿using EducationalCourse.Domain.Models.Account;
 using Microsoft.EntityFrameworkCore;
 
 namespace EducationalCourse.DataAccess.EF.Configurations
@@ -20,11 +20,6 @@ namespace EducationalCourse.DataAccess.EF.Configurations
 
             builder
                 .Property(E => E.Email)
-                .IsRequired(true)
-                .HasMaxLength(100);
-
-            builder
-                .Property(x => x.UserName)
                 .IsRequired(true)
                 .HasMaxLength(100);
 

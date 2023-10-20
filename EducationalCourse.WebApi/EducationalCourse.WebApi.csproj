@@ -22,11 +22,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Controllers\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\EducationalCourse.DataAccess.EF\EducationalCourse.DataAccess.EF.csproj" />
+	  <ProjectReference Include="..\EducationalCourse.Framework\EducationalCourse.Framework.csproj" />
 	  <ProjectReference Include="..\EducationalCourse.IoC\EducationalCourse.IoC.csproj" />
 	</ItemGroup>
 

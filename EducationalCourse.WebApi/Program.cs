@@ -1,10 +1,12 @@
+using EducationalCourse.Framework.Infrastructure.Extensions;
 using EducationalCourse.IOC;
 using Microsoft.OpenApi.Models;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+//var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
-// Add services to the container.
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -57,6 +59,8 @@ DependencyContainer.ConfigureServices(builder.Configuration, builder.Services);
 
 var app = builder.Build();
 
+app.UseCustomExceptionHandler();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -67,5 +71,30 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseJWTHandler();
 
 app.Run();
+
+
+#region Logger
+//Run(logger);
+
+//void Run(NLog.Logger logger)
+//{
+//    try
+//    {
+//        logger.Debug("Initialize Main");
+//        app.Run();
+//    }
+//    catch (Exception ex)
+//    {
+//        logger.Error(ex, "Stopped program because of exception");
+//        throw;
+//    }
+//    finally
+//    {
+//        NLog.LogManager.Shutdown();
+//    }
+//}
+#endregion Logger
+
