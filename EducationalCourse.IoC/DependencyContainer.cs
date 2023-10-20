@@ -46,12 +46,14 @@ namespace EducationalCourse.IOC
             #region Rejester Repository
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICourseRepository, CourseRepository>();
 
             #endregion Rejester Repository
 
             #region Rejester Servises
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICourseServise, CourseService>();
             services.AddScoped<IFileManagerService, FileManagerService>();
 
             #endregion Rejester Servises

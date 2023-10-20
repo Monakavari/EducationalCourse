@@ -1,5 +1,5 @@
 ﻿using EducationalCourse.Common.Dtos.User;
-using EducationalCourse.Domain.Models.Account;
+using EducationalCourse.Domain.Dtos;
 using EducationalCourse.Framework;
 
 namespace EducationalCourse.ApplicationService.Services.Contracts

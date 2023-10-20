@@ -1,4 +1,6 @@
-﻿namespace EducationalCourse.Domain.Models.Account;
+﻿using EducationalCourse.Domain.Models.Account;
+
+namespace EducationalCourse.Domain.Dtos;
 
 public class LoginResponseDto
 {

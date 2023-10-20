@@ -1,12 +1,13 @@
-﻿using EducationalCourse.Domain.Models.Base;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace EducationalCourse.Domain.Models.Course
+namespace EducationalCourse.Domain.Dtos.Course
 {
-    public class Course : BaseEntity
+    public class CourseDto
     {
-
-        public int CourseGroupId { get; set; }
-        public CourseGroup CourseGroup { get; set; }
         public string CourseTitle { get; set; }
         public string CourseImageName { get; set; }
         public string CourseImageBase64 { get; set; }
@@ -14,3 +15,4 @@ namespace EducationalCourse.Domain.Models.Course
         public bool IsFreeCost { get; set; }
     }
 }
+

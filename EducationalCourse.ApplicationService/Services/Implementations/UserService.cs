@@ -6,6 +6,7 @@ using EducationalCourse.Common.DTOs.Configurations;
 using EducationalCourse.Common.Extensions;
 using EducationalCourse.Common.Utilities.Generator;
 using EducationalCourse.Common.Utilities.Security;
+using EducationalCourse.Domain.Dtos;
 using EducationalCourse.Domain.ICommandRepositories.Base;
 using EducationalCourse.Domain.Models.Account;
 using EducationalCourse.Domain.Repository;
