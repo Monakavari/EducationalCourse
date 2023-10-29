@@ -4,14 +4,15 @@ namespace EducationalCourse.Domain.Models.Course
 {
     public class CourseGroup : BaseEntity
     {
-        /// <summary>
-        /// 
-        /// </summary>
+        public CourseGroup()
+        {
+            Children =new List<CourseGroup>();
+            Courses = new List<Course>();
+        }
         public string CourseGroupTitle { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
+        public string Lineage { get; set; }
+        public int DirectChildCount { get; set; }
+        public int ParentCount { get; set; }
         public int? ParentId { get; set; }
         public CourseGroup Parent { get; set; }
 

@@ -4,6 +4,7 @@ using EducationalCourse.DataAccess.EF.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalCourse.DataAccess.EF.Migrations
 {
     [DbContext(typeof(EducationalCourseContext))]
-    partial class EducationalCourseContextModelSnapshot : ModelSnapshot
+    [Migration("20231026165446_AddingAnotherCourseTables")]
+    partial class AddingAnotherCourseTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,23 +341,14 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DirectChildCount")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Lineage")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Log")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ParentCount")
-                        .HasColumnType("int");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");

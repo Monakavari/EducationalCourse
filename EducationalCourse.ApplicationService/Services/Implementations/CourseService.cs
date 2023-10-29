@@ -24,10 +24,33 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             if (!string.IsNullOrWhiteSpace(courseTitle) && courseTitle.Length < 4)
                 throw new AppException("تعداد کاراکتر وارد شده باید بیشتر باشد");
 
-            var result = await _courseRepository.GetAllCourse(courseTitle,cancellationToken);
+            var result = await _courseRepository.GetAllCourse(courseTitle, cancellationToken);
 
             return new ApiResult<List<CourseDto>>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد");
+        }
 
+        //********************************GetLastCourses************************************
+        public async Task<ApiResult<List<CourseDto>>> GetLastCourses(CancellationToken cancellationToken)
+        {
+            var result = await _courseRepository.GetLastCourses(cancellationToken);
+
+            if (result is null)
+                throw new AppException("دوره ای یافت نشد");
+
+            return new ApiResult<List<CourseDto>>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد.");
+        }
+
+        //********************************GetPopularCourses************************************
+        public async Task<ApiResult<List<CourseDto>>> GetPopularCourses(CancellationToken cancellationToken)
+        {
+
+            var result = await _courseRepository.GetPopularCourses(cancellationToken);
+
+            if (result is null)
+                throw new AppException("دوره ای یافت نشد");
+
+
+            return new ApiResult<List<CourseDto>>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد.");
         }
     }
 }

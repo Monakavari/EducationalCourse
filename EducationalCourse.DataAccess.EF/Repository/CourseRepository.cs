@@ -4,12 +4,6 @@ using EducationalCourse.Domain.Dtos.Course;
 using EducationalCourse.Domain.Models.Course;
 using EducationalCourse.Domain.Repository;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EducationalCourse.DataAccess.EF.Repository
 {
@@ -25,6 +19,7 @@ namespace EducationalCourse.DataAccess.EF.Repository
 
         #endregion Constructor
 
+        //**************************************GetAllCourse*****************************************
         public async Task<List<CourseDto>> GetAllCourse(string courseTitle, CancellationToken cancellationTokenn)
         {
             var result = await _context.Courses
@@ -42,5 +37,39 @@ namespace EducationalCourse.DataAccess.EF.Repository
             return result;
         }
 
+        public async Task<List<CourseDto>> GetLastCourses(CancellationToken cancellationToken)
+        {
+            var result = await _context.Courses
+                               .OrderByDescending(x => x.CreateDate).Take(5)
+                               .Select(x => new CourseDto
+                               {
+                                   CourseTitle = x.CourseTitle,
+                                   CoursePrice = x.CoursePrice,
+                                   IsFreeCost = x.IsFreeCost,
+                                   CourseImageBase64 = x.CourseImageBase64,
+                                   CourseImageName = x.CourseImageName
+
+                               }).ToListAsync(cancellationToken);
+
+            return result;
+        }
+
+        public async Task<List<CourseDto>> GetPopularCourses(CancellationToken cancellationToken)
+        {
+            var result = await _context.Courses
+                               .OrderByDescending(x => x.ViewCount).Take(5)
+                               .Select(x => new CourseDto
+                               {
+                                   CourseTitle = x.CourseTitle,
+                                   CoursePrice = x.CoursePrice,
+                                   IsFreeCost = x.IsFreeCost,
+                                   CourseImageBase64 = x.CourseImageBase64,
+                                   CourseImageName = x.CourseImageName
+
+                               }).ToListAsync(cancellationToken);
+
+            return result;
+
+        }
     }
 }

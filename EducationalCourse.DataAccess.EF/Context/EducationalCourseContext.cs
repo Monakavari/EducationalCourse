@@ -16,11 +16,14 @@ namespace EducationalCourse.DataAccess.EF.Context
         }
 
         #region DBSet
-
-        public virtual DbSet<Course> Courses { get; set; }
-        public virtual DbSet<CourseGroup> CourseGroups { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-
+        public DbSet<User> Users { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<CourseGroup> CourseGroups { get; set; }
+        public DbSet<CourseGroup> CourseComments { get; set; }
+        public DbSet<CourseGroup> CourseEpisodes { get; set; }
+        public DbSet<CourseGroup> CourseStatuses { get; set; }
+        public DbSet<CourseGroup> CourseLeveles { get; set; }
+       
         #endregion DBSet
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

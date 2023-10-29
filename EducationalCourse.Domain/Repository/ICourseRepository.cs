@@ -7,5 +7,7 @@ namespace EducationalCourse.Domain.Repository
     public interface ICourseRepository :IBaseRepository<Course>
     {
         Task<List<CourseDto>> GetAllCourse(string courseTitle,CancellationToken cancellationToken);
+        Task<List<CourseDto>> GetLastCourses(CancellationToken cancellationToken);
+        Task<List<CourseDto>> GetPopularCourses(CancellationToken cancellationToken);
     }
 }
