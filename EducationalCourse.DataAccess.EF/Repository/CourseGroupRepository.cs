@@ -60,6 +60,30 @@ namespace EducationalCourse.DataAccess.EF.Repository
         //***********GenerateAndSetLineageOnUpdateParentIdForNodeAndItsChildren********
         public async Task<bool> GenerateAndSetLineageOnUpdateParentIdForNodeAndItsChildren(int courseGroupId, int? newParentID, CancellationToken cancellationToken)
         {
+            //var node = db.Categories.FirstOrDefault(x => x.CategoryID == CategorydID);
+            //string newParentLineage = "";
+            //if (newParentID != null)
+            //{
+
+            //    newParentLineage = db.Categories.FirstOrDefault(x => x.CategoryID == newParentID).Lineage;
+            //}
+            //var nl = node.Lineage;
+
+
+            //var allChildren = db.Categories.Where(x => x.Lineage.StartsWith(nl)).ToList();
+            //foreach (Category child in allChildren)
+            //{
+            //    child.Lineage = child.Lineage.Replace(nl, newParentLineage + CategorydID + ",");
+            //}
+            //var newParent = db.Categories.FirstOrDefault(x => x.CategoryID == newParentID);
+            //if (newParentID != null && newParent != null)
+            //{
+            //    newParent.DirectChildCount = newParent.DirectChildCount + 1;
+
+            //}
+            //node.ParentID = newParentID;
+            //db.SaveChanges();
+            //return true;
             throw new NotImplementedException();
         }
 
