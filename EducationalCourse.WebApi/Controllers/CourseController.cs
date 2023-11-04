@@ -1,5 +1,6 @@
 ﻿using EducationalCourse.ApplicationService.Services.Contracts;
 using EducationalCourse.Common.Dtos;
+using EducationalCourse.Common.Dtos.Course;
 using EducationalCourse.WebApi.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ namespace EducationalCourse.WebApi.Controllers
         }
 
         #endregion Constructor
+
         [HttpGet]
         public async Task<IActionResult> SearchCourseByTitle(string courseTitle, CancellationToken cancellationToken=default)
         {
@@ -48,6 +50,13 @@ namespace EducationalCourse.WebApi.Controllers
         public async Task<IActionResult> CreateCourse(AddCourseDto request, CancellationToken cancellationToken = default)
         {
             var result = await _courseServise.CreateCourse(request, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCourse(EditCourseDto request, CancellationToken cancellationToken = default)
+        {
+            var result = await _courseServise.EditCourse(request, cancellationToken);
             return Ok(result);
         }
     }

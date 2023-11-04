@@ -13,7 +13,7 @@ namespace EducationalCourse.Common.Dtos.Course
         public int CourseGroupId { get; set; }
         public int? SubCourseGroupId { get; set; }
         public int CourseLevelId { get; set; }
-        public int CourseStetusId { get; set; }
+        public int CourseStatusId { get; set; }
         public int TeacherId { get; set; }
         public string CourseTitle { get; set; }
         public int CoursePrice { get; set; }

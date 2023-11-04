@@ -12,6 +12,7 @@ using EducationalCourse.Framework;
 using EducationalCourse.Framework.BasePaging.Dtos;
 using EducationalCourse.Framework.CustomException;
 using EducationalCourse.Framework.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace EducationalCourse.ApplicationService.Services.Implementations
 {
@@ -22,16 +23,18 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         private readonly ICourseRepository _courseRepository;
         private readonly IFileManagerService _fileManagerService;
         private readonly IUnitOfWork _unitOfWork;
-        public CourseService(ICourseRepository courseRepository, IFileManagerService fileManagerService, IUnitOfWork unitOfWork)
+        private readonly ICourseEpisodeRepository _episodeRepository;
+        public CourseService(ICourseRepository courseRepository, IFileManagerService fileManagerService, IUnitOfWork unitOfWork, ICourseEpisodeRepository episodeRepository)
         {
             _courseRepository = courseRepository;
             _fileManagerService = fileManagerService;
             _unitOfWork = unitOfWork;
+            _episodeRepository = episodeRepository;
         }
 
         #endregion Constructor
 
-        //******************************** SearchCourseByTitle ******************************
+        //******************************** SearchCourseByTitle *****************************
         public async Task<ApiResult<List<FilterCourseDto>>> SearchCourseByTitle(string courseTitle, CancellationToken cancellationToken)
         {
             if (!string.IsNullOrWhiteSpace(courseTitle) && courseTitle.Length < 4)
@@ -66,7 +69,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return new ApiResult<List<FilterCourseDto>>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد.");
         }
 
-        //******************************** CreateCourse ************************************
+        //******************************** CreateCourse *************************************
         public async Task<ApiResult> CreateCourse(AddCourseDto request, CancellationToken cancellationToken)
         {
             //ToDo fields validation  
@@ -74,11 +77,16 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
 
             var entity = MappingCourseEntity(request);
             await _courseRepository.AddAsync(entity, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
+
+            if (!result)
+                throw new AppException("عملیات ثبت خبر در دیتابیس با خطا مواجه شد");
 
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد");
         }
 
+        //******************************** MappingCourseEntity ******************************
         private Course MappingCourseEntity(AddCourseDto request)
         {
             var saveImageResult = _fileManagerService.SaveImageCourse(request.FormFile, request.CourseTitle);
@@ -101,7 +109,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
 
         }
 
-        //******************************** GetFilterCourses ********************************
+        //******************************** GetFilterCourses *********************************
         public async Task<DataGridResult<FilterCourseResponseDto>> GetFilterCourses(FilterCourseRequestDto request, CancellationToken cancellationToken)
         {
             var result = new DataGridResult<FilterCourseResponseDto>();
@@ -125,7 +133,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return result;
         }
 
-        //************************************* Filter *************************************
+        //************************************* Filter **************************************
         private async Task<DataGridResult<Course>> Filter(FilterCourseRequestDto request)
         {
             var expresion = _courseRepository
@@ -161,49 +169,81 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return filter;
         }
 
-        //************************************* AddVideoFileToCourse *************************************
+        //************************************* AddVideoFileToCourse ************************
         public async Task<ApiResult> AddVideoFileToCourse(List<AddVideoFileCourseDto> request, CancellationToken cancellationToken)
         {
-            //var videoFiles = request.Select(c => c.VideoFiles).ToList();
-            //var saveFilesResults = _fileManagerService.SaveFiles(videoFiles, request.First().DirectoryName);
+            var videoFiles = request.Select(c => c.VideoFiles).ToList();
 
-            //var entities = MappingCourseEpisode(request, saveFilesResults);
-            throw new AppException();
+            var entities = MappingCourseEpisode(request);
+            await _episodeRepository.AddRangeAsync(entities, cancellationToken);
+
+            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
+
+            if (!result)
+                throw new AppException("عملیات ثبت در دیتابیس با خطا مواجه شد");
+
+            return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد");
 
         }
-
-        private List<CourseEpisode> MappingCourseEpisode(List<AddVideoFileCourseDto> request, List<string> videoNames)
+        //************************************* MappingCourseEpisode *************************
+        private List<CourseEpisode> MappingCourseEpisode(List<AddVideoFileCourseDto> request)
         {
             var result = new List<CourseEpisode>();
 
             foreach (var item in request)
             {
+                var fileName = _fileManagerService.SaveFile(item.VideoFiles, request.First().DirectoryName);
                 result.Add(new CourseEpisode
                 {
                     CourseId = item.CourseId,
                     EpisodeTime = item.EpisodeTime,
                     IsFree = item.IsFree,
                     IsActive = true,
-                    EpisodeFileName = MappName(videoNames)
+                    EpisodeFileName = fileName
                 });
             }
 
             return result;
         }
 
-        private string MappName(List<string> videoNames)
+        //************************************* EditCourse ***********************************
+        public async Task<ApiResult> EditCourse(EditCourseDto request, CancellationToken cancellationToken)
         {
-            var EpisodeFileName = string.Empty;
+            //ToDo validation
+            //ToDo business validation
+            var course = await _courseRepository.GetByIdAsync(request.Id, cancellationToken);
+            var saveImageResult = _fileManagerService.SaveImageCourse(request.FormFile, course.CourseTitle, course.CourseImageName);
+            var demoVideoName = _fileManagerService.SaveFile(request.FormFile, request.DirectoryName);
 
-            videoNames.ForEach(c =>
-            {
-                EpisodeFileName = c;
-            });
+            Course c = new Course();
 
-            return EpisodeFileName;
+            c.CourseGroupId = request.CourseGroupId;
+            c.SubCourseGroupId = request.SubCourseGroupId;
+            c.CourseLevelId = request.CourseLevelId;
+            c.CourseStatusId = request.CourseStatusId;
+            c.TeacherId = request.TeacherId;
+            c.CourseTitle = request.CourseTitle;
+            c.CoursePrice = request.CoursePrice;
+            c.IsFreeCost = request.IsFreeCost;
+            c.CoursePrice = request.CoursePrice;
+            c.CourseImageBase64 = saveImageResult.AvatarBase64;
+            c.CourseImageName = saveImageResult.AvatarName;
+            c.DemoVideo = demoVideoName;
+
+            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
+
+            if (!result)
+                throw new AppException("عملیات ویرایش در دیتابیس با خطا مواجه شد");
+
+            return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
         }
 
-        public Task<ApiResult> EditCourse(AddCourseDto request, CancellationToken cancellationToken)
+        public async Task<ApiResult> DeleteCourse(int id,string fileName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApiResult> DeleteCourse(int id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

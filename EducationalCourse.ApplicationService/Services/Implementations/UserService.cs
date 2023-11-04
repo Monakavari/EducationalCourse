@@ -186,7 +186,10 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             user.AvatarName = saveImageResult?.AvatarName;
             user.AvatarBase64 = saveImageResult?.AvatarBase64;
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
+
+            if (!result)
+                throw new AppException("عملیات ویرایش در دیتابیس با خطا مواجه شد");
 
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
         }
