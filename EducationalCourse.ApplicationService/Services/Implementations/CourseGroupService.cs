@@ -1,13 +1,10 @@
 ﻿using EducationalCourse.ApplicationService.Services.Contracts;
 using EducationalCourse.Domain.Dtos.Course;
-using EducationalCourse.Domain.Models.Course;
+using EducationalCourse.Domain.Entities;
 using EducationalCourse.Domain.Repository;
 using EducationalCourse.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using EducationalCourse.Framework.CustomException;
+using Microsoft.EntityFrameworkCore;
 
 namespace EducationalCourse.ApplicationService.Services.Implementations
 {
@@ -22,50 +19,129 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             _courseGroupRepository = courseGroupRepository;
         }
 
-        public Task<ApiResult> AddCourseGroup()
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion Constructor
 
-        //*************************************GetAllCourseGroups*****************************************
+        //************************************* LoadCourseGroupParentChaild *************************
         public async Task<ApiResult<List<CourseGroupDto>>> GetAllCourseGroups(CancellationToken cancellationToken)
-
         {
+            var courseGroupList = await _courseGroupRepository.FetchIQueryableEntity().Where(x => x.IsActive).ToListAsync(cancellationToken);
             var result = new List<CourseGroupDto>();
-            var entity = await _courseGroupRepository.GetCourseGroups();
 
-            if (entity == null)
-                throw new Exception("گروهی یافت نشد");
+            if (courseGroupList is null)
+                throw new Exception("گروهی یافت نشد ");
 
-            GetAllParents(result, entity);
-            //GetAllChildren(result, entity);
+            result = LoadCourseGroupParentChild(result, courseGroupList);
 
             return new ApiResult<List<CourseGroupDto>>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد.");
-
         }
 
-        private void GetAllParents(List<CourseGroupDto> result, List<CourseGroup> entity)
+        //************************************* LoadCourseGroupParentChaild *************************
+        private List<CourseGroupDto> LoadCourseGroupParentChild(List<CourseGroupDto> request, List<CourseGroup> courseGroupList)
         {
-            foreach (var item in entity.Where(x => x.ParentId == null))
+            foreach (var courseGroup in courseGroupList.Where(x => x.ParentId is null))
             {
-                result.Add(new CourseGroupDto
+                request.Add(new CourseGroupDto
                 {
-                    id = item.Id,
-                    Title = item.CourseGroupTitle,
+                    id = courseGroup.Id,
+                    Title = courseGroup.CourseGroupTitle,
+                    ParentId = courseGroup.ParentId,
+                    Children = LoadChildren(courseGroupList, courseGroup.Id)
                 });
             }
-
+            return request;
         }
 
-        //private void GetAllChildren(List<CourseGroupDto> result, List<CourseGroup> entity)
-        //{
-        //    var courseGroup = _courseGroupRepository.GetById();
-        //    foreach (var item in entity.Where(x => x.Id= ))
-        //}
+        //************************************* LoadChildren ****************************************
+        private List<CourseGroupDto> LoadChildren(List<CourseGroup> courseGroupList, int parentId)
+        {
+            var children = new List<CourseGroupDto>();
+
+            foreach (var courseGroup in courseGroupList.Where(x => x.ParentId == parentId))
+            {
+                children.Add(new CourseGroupDto
+                {
+                    id = courseGroup.Id,
+                    Title = courseGroup.CourseGroupTitle,
+                    ParentId = courseGroup.ParentId,
+                    Children = LoadChildren(courseGroupList, courseGroup.Id)
+                });
+            }
+            return children;
+        }
+
+        //************************************* AddParent *******************************************
+        public async Task<ApiResult> AddParent(AddParentCourseGroupDto request, CancellationToken cancellationToken)
+        {
+            if (request.CourseGroupTitle is null)
+                throw new AppException("عنوان نمی تواند خالی باشد");
+
+            if (await _courseGroupRepository.ExistCourseGroupName(request.CourseGroupTitle, cancellationToken))
+            {
+                throw new AppException("عنوان نمی تواند تکراری باشد");
+
+            }
+            CourseGroup courseGroup = new CourseGroup
+            {
+                CourseGroupTitle = request.CourseGroupTitle,
+                ParentId = null,
+            };
+
+            await _courseGroupRepository.AddAsync(courseGroup, cancellationToken);
+
+            return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
+        }
+
+        //************************************* AddChild ********************************************
+        public async Task<ApiResult> AddChild(AddChildCourseGroupDto request, CancellationToken cancellationToken)
+        {
+            if (request.CourseGroupTitle is null)
+                throw new AppException("عنوان نمی تواند خالی باشد");
+
+            if (await _courseGroupRepository.ExistCourseGroupName(request.CourseGroupTitle, cancellationToken))
+            {
+                throw new AppException("عنوان نمی تواند خالی باشد");
+
+            }
+
+            CourseGroup courseGroup = new CourseGroup
+            {
+                CourseGroupTitle = request.CourseGroupTitle,
+                Id = request.ParentId,
+            };
+
+            await _courseGroupRepository.AddAsync(courseGroup, cancellationToken);
+
+            return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
+        }
     }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //public List<CategoryItemList> Search(CategorySearchModel sm, out int RecordCount)
 //{
 //    if (sm.PageSize == 0)

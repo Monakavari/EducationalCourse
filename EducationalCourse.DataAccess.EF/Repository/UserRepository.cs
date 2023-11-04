@@ -20,11 +20,11 @@ namespace EducationalCourse.DataAccess.EF.Repository
         public async Task<User> GetUserByActiveCode(string activeCode, CancellationToken cancellationToken)
         {
             var result = await _dbContext.Users
-                         .Where(x => x.ActiveCode.Equals(activeCode)).SingleOrDefaultAsync(cancellationToken);
+                         .Where(x => x.ActiveCode.Equals(activeCode))
+                         .SingleOrDefaultAsync(cancellationToken);
 
             return result;
         }
-
 
         //************************************GetUserByEmailOrMobile****************************
         public async Task<User> GetUserByEmailOrMobile(LoginRequestDto request, CancellationToken cancellationToken)
@@ -32,29 +32,30 @@ namespace EducationalCourse.DataAccess.EF.Repository
             var result = await _dbContext.Users
                                .Where(x => x.IsActive)
                                .Where(x => x.Email.Equals(request.UserName) ||
-                                x.Mobile.Equals(request.UserName)).SingleOrDefaultAsync(cancellationToken);
+                                x.Mobile.Equals(request.UserName))
+                               .SingleOrDefaultAsync(cancellationToken);
 
             return result;
         }
-
 
         //************************************GetUserByUserName*********************************
         public async Task<User> GetUserByUserName(string userName, CancellationToken cancellationToken)
         {
             var result = await _dbContext.Users
                                .Where(x => x.Email.Equals(userName) ||
-                                x.Mobile.Equals(userName)).SingleOrDefaultAsync(cancellationToken);
+                                x.Mobile.Equals(userName))
+                               .SingleOrDefaultAsync(cancellationToken);
 
             return result;
         }
-
 
         //************************************IsExistUser***************************************
         public async Task<bool> IsExistUser(SignUpDto request, CancellationToken cancellationToken)
         {
             var result = await _dbContext.Users
                                .Where(x => x.Email.Equals(request.Email) ||
-                               x.Mobile.Equals(request.Mobile)).AnyAsync(cancellationToken);
+                               x.Mobile.Equals(request.Mobile))
+                               .AnyAsync(cancellationToken);
 
             return result;
         }

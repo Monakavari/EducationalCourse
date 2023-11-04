@@ -67,7 +67,8 @@ namespace EducationalCourse.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditUserAccount(EditAccountUserDto request, CancellationToken cancellationToken = default)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> EditUserAccount([FromForm] EditAccountUserDto request, CancellationToken cancellationToken = default)
         {
             var result = await _userService.EditUserAccount(request, cancellationToken);
             return Ok(result);

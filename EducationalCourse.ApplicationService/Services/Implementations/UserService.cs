@@ -27,25 +27,28 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly SiteSettings _siteSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IFileManagerService _fileManagerService;
 
         public UserService(IUserRepository userRepository,
                            IMapper mapper,
                            IUnitOfWork unitOfWork,
                            IOptions<SiteSettings> options,
-                           IHttpContextAccessor httpContextAccessor)
+                           IHttpContextAccessor httpContextAccessor,
+                           IFileManagerService fileManagerService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _siteSettings = options.Value;
             _httpContextAccessor = httpContextAccessor;
+            _fileManagerService = fileManagerService;
         }
 
         #endregion Constructor
 
         #region SignUpAndLoginUser
 
-        //*******************************SignUp************************************
+        //******************************* SignUp ******************************
         public async Task<ApiResult> SignUp(SignUpDto request, CancellationToken cancellationToken)
         {
             AccountValidator.SetValidators(request);
@@ -62,7 +65,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
         }
 
-        //*******************************Login*******************************
+        //******************************* Login *******************************
         public async Task<ApiResult<LoginResponseDto>> Login(LoginRequestDto request, CancellationToken cancellationToken)
         {
             AccountValidator.SetValidators(request);
@@ -84,7 +87,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
 
         }
 
-        //*******************************ActiveUser**********************
+        //******************************* ActiveUser **************************
         public async Task<ApiResult> ActiveUser(string activeCode, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetUserByActiveCode(activeCode, cancellationToken);
@@ -103,7 +106,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return new ApiResult(true, ApiResultStatusCode.Success);
         }
 
-        //*******************************ForgetPassword**********************
+        //******************************* ForgetPassword **********************
         public async Task<ApiResult<int>> ForgetPassword(string userName, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetUserByUserName(userName, cancellationToken);
@@ -118,7 +121,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
 
         }
 
-        //*******************************RePassword*******************************
+        //******************************* RePassword **************************
         public async Task<ApiResult> RePassword(RePasswordRequestDto request, CancellationToken cancellationToken)
         {
             AccountValidator.SetValidators(request);
@@ -151,7 +154,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
 
         #region UserPannel
 
-        //*******************************GetUserAccount*******************************
+        //******************************* GetUserAccount **********************
         public async Task<ApiResult<UserAccountInfoDto>> GetUserAccount(CancellationToken cancellationToken)
         {
             var userId = _httpContextAccessor.GetUserId();
@@ -164,42 +167,29 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
                 FirstName = user.FirstName,
                 LasttName = user.LastName,
                 Mobile = user.Mobile,
+                AvatarBase64 = user.AvatarBase64,
+                AvatarName = user.AvatarName
             };
             //var result = _mapper.Map<User, UserAccountInfoDto>(user);
 
             return new ApiResult<UserAccountInfoDto>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد.");
         }
 
-        //*******************************GetUserAccount*******************************
+        //******************************* EditUserAccount *********************
         public async Task<ApiResult> EditUserAccount(EditAccountUserDto request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
+            var saveImageResult = _fileManagerService.SaveImageUserProfile(request.FormFile, user.Email, user.AvatarName);
 
             user.FirstName = request.FirstName;
             user.LastName = request.LasttName;
-            user.AvatarName = request.AvatarName;
-            // SaveImage(request, user);
+            user.AvatarName = saveImageResult?.AvatarName;
+            user.AvatarBase64 = saveImageResult?.AvatarBase64;
 
-            _userRepository.Update(user);
-            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
-
-            if (!result)
-                throw new AppException("ویرایش اطلاعات حساب کاربری در هنگام عملیات دیتابیس با مشکل مواجه شد");
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
-
-
         }
-
-        //private void SaveImage(EditAccountUserDto request, User user)
-        //{
-        //    if (!string.IsNullOrWhiteSpace(request.AvatarName))
-        //    {
-        //        var imageFile = ImageUploaderExtension.Base64ToImage(request.AvatarName);
-        //        var imageName = NameGenerator.GenerateUniqCode() + "jpeg";
-        //        imageFile.AddImageToServer(imageName, PathTools.ProfileImageUserServerPath, user.AvatarName);
-        //    }
-        //}
 
         #endregion UserPannel
     }

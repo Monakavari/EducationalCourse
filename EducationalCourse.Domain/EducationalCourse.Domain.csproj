@@ -14,4 +14,5 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\EducationalCourse.Common\EducationalCourse.Common.csproj" />
 	</ItemGroup>
+
 </Project>

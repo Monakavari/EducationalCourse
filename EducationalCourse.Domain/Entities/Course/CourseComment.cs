@@ -1,6 +1,5 @@
 ﻿using EducationalCourse.Domain.Models.Account;
 using EducationalCourse.Domain.Models.Base;
-using EducationalCourse.Domain.Models.Course;
 
 namespace EducationalCourse.Domain.Entities
 {

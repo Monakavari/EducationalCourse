@@ -7,6 +7,8 @@
         public string Email { get; set; }
         public string Mobile { get; set; }
         public string CreateDateDisplay { get; set; }
+        public string AvatarBase64 { get; set; }
+        public string AvatarName { get; set; }
         public DateTime CreateDate { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using EducationalCourse.DataAccess.EF.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalCourse.DataAccess.EF.Migrations
 {
     [DbContext(typeof(EducationalCourseContext))]
-    partial class EducationalCourseContextModelSnapshot : ModelSnapshot
+    [Migration("20231103074542_DeleteSomeFieldFromCourseGroup")]
+    partial class DeleteSomeFieldFromCourseGroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,9 +303,6 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Property<string>("Log")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SubCourseGroupId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TeacherId")
                         .HasColumnType("int");
 
@@ -319,8 +319,6 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.HasIndex("CourseLevelId");
 
                     b.HasIndex("CourseStetusId");
-
-                    b.HasIndex("SubCourseGroupId");
 
                     b.HasIndex("TeacherId");
 
@@ -422,11 +420,6 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EducationalCourse.Domain.Models.Course.CourseGroup", "SubCourseGroup")
-                        .WithMany("SubCourseGroups")
-                        .HasForeignKey("SubCourseGroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("EducationalCourse.Domain.Models.Account.User", "User")
                         .WithMany("Courses")
                         .HasForeignKey("TeacherId")
@@ -438,8 +431,6 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Navigation("CourseLevel");
 
                     b.Navigation("CourseStatus");
-
-                    b.Navigation("SubCourseGroup");
 
                     b.Navigation("User");
                 });
@@ -488,8 +479,6 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Navigation("Children");
 
                     b.Navigation("Courses");
-
-                    b.Navigation("SubCourseGroups");
                 });
 #pragma warning restore 612, 618
         }

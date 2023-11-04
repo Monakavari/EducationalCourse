@@ -8,7 +8,7 @@ namespace EducationalCourse.Domain.Models.Account
         public User()
         {
             CourseComments = new List<CourseComment>();
-            Courses = new List<Course.Course>();
+            Courses = new List<Course>();
         }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -19,7 +19,7 @@ namespace EducationalCourse.Domain.Models.Account
         public string AvatarBase64 { get; set; }
         public string ActiveCode { get; set; }
         public ICollection<CourseComment> CourseComments { get; set; }
-        public ICollection<Course.Course> Courses { get; set; }
+        public ICollection<Course> Courses { get; set; }
 
     }
 }

@@ -27,4 +27,8 @@
 	  <ProjectReference Include="..\EducationalCourse.IoC\EducationalCourse.IoC.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+
 </Project>

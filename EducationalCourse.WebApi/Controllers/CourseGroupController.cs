@@ -1,5 +1,6 @@
-﻿using EducationalCourse.ApplicationService.Services.Contracts;
-using EducationalCourse.ApplicationService.Services.Implementations;
+﻿using Azure.Core;
+using EducationalCourse.ApplicationService.Services.Contracts;
+using EducationalCourse.Domain.Dtos.Course;
 using EducationalCourse.WebApi.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,20 @@ namespace EducationalCourse.WebApi.Controllers
         public async Task<IActionResult> GetAllCourseGroups(CancellationToken cancellationToken = default)
         {
             var result = await _courseGroupService.GetAllCourseGroups(cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddParent(AddParentCourseGroupDto request, CancellationToken cancellationToken = default)
+        {
+            var result = await _courseGroupService.AddParent(request, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddChild(AddChildCourseGroupDto request, CancellationToken cancellationToken = default)
+        {
+            var result = await _courseGroupService.AddChild(request, cancellationToken);
             return Ok(result);
         }
     }

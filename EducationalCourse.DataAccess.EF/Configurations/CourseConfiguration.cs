@@ -1,4 +1,4 @@
-﻿using EducationalCourse.Domain.Models.Course;
+﻿using EducationalCourse.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,9 +33,15 @@ namespace EducationalCourse.DataAccess.EF.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder
-                .HasOne(x => x.CourseStetus)
+                .HasOne(x => x.SubCourseGroup)
+                .WithMany(x => x.SubCourseGroups)
+                .HasForeignKey(x => x.SubCourseGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .HasOne(x => x.CourseStatus)
                 .WithMany(x => x.Courses)
-                .HasForeignKey(x => x.CourseStetusId);
+                .HasForeignKey(x => x.CourseStatusId);
 
 
             builder
@@ -43,7 +49,6 @@ namespace EducationalCourse.DataAccess.EF.Configurations
                 .WithMany(x => x.Courses)
                 .HasForeignKey(x => x.CourseLevelId)
                 .OnDelete(DeleteBehavior.Restrict);
-
 
 
             builder

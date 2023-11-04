@@ -8,5 +8,6 @@ namespace EducationalCourse.Common.Dtos.User
         public string FirstName { get; set; }
         public string LasttName { get; set; }
         public string AvatarName { get; set; }
+        public IFormFile  FormFile { get; set; }
     }
 }

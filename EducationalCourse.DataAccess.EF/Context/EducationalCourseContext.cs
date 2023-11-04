@@ -1,6 +1,6 @@
 ﻿using EducationalCourse.DataAccess.EF.Configurations;
+using EducationalCourse.Domain.Entities;
 using EducationalCourse.Domain.Models.Account;
-using EducationalCourse.Domain.Models.Course;
 using Microsoft.EntityFrameworkCore;
 
 namespace EducationalCourse.DataAccess.EF.Context

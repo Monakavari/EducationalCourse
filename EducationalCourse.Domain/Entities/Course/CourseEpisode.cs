@@ -1,5 +1,4 @@
 ﻿using EducationalCourse.Domain.Models.Base;
-using EducationalCourse.Domain.Models.Course;
 
 namespace EducationalCourse.Domain.Entities
 {
@@ -7,9 +6,9 @@ namespace EducationalCourse.Domain.Entities
     {
         public int CourseId { get; set; }
         public Course Course { get; set; }
-        public string Title { get; set; }
         public TimeSpan EpisodeTime { get; set; }
         public string EpisodeFileName { get; set; }
+        public string EpisodeFileTitle { get; set; }
         public bool IsFree { get; set; }
     }
 }
