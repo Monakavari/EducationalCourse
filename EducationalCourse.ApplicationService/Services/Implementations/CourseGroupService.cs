@@ -116,32 +116,6 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //public List<CategoryItemList> Search(CategorySearchModel sm, out int RecordCount)
 //{
 //    if (sm.PageSize == 0)
