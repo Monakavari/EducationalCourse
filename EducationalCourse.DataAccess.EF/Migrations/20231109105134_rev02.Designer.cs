@@ -4,6 +4,7 @@ using EducationalCourse.DataAccess.EF.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalCourse.DataAccess.EF.Migrations
 {
     [DbContext(typeof(EducationalCourseContext))]
-    partial class EducationalCourseContextModelSnapshot : ModelSnapshot
+    [Migration("20231109105134_rev02")]
+    partial class rev02
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,8 +179,8 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("EpisodeTime")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<TimeSpan>("EpisodeTime")
+                        .HasColumnType("time");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");

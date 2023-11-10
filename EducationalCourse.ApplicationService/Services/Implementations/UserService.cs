@@ -3,6 +3,7 @@ using EducationalCourse.ApplicationService.Services.Contracts;
 using EducationalCourse.ApplicationService.Validations;
 using EducationalCourse.Common.Dtos.User;
 using EducationalCourse.Common.DTOs.Configurations;
+using EducationalCourse.Common.Enums;
 using EducationalCourse.Common.Extensions;
 using EducationalCourse.Common.Utilities.Generator;
 using EducationalCourse.Common.Utilities.Security;
@@ -179,7 +180,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         public async Task<ApiResult> EditUserAccount(EditAccountUserDto request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
-            var saveImageResult = _fileManagerService.SaveImageUserProfile(request.FormFile, user.Email, user.AvatarName);
+            var saveImageResult = _fileManagerService.SaveImage(FileTypeEnum.UserImage, request.FormFile, user.Email, user.AvatarName);
 
             user.FirstName = request.FirstName;
             user.LastName = request.LasttName;

@@ -1,18 +1,16 @@
 ﻿using EducationalCourse.ApplicationService.Services.Contracts;
 using EducationalCourse.Common.Dtos;
 using EducationalCourse.Common.Dtos.Course;
+using EducationalCourse.Common.Enums;
 using EducationalCourse.Domain.Dtos;
 using EducationalCourse.Domain.Dtos.Course;
-using EducationalCourse.Domain.Dtos.FileManager;
 using EducationalCourse.Domain.Entities;
 using EducationalCourse.Domain.ICommandRepositories.Base;
-using EducationalCourse.Domain.Models.Account;
 using EducationalCourse.Domain.Repository;
 using EducationalCourse.Framework;
 using EducationalCourse.Framework.BasePaging.Dtos;
 using EducationalCourse.Framework.CustomException;
 using EducationalCourse.Framework.Extensions;
-using Microsoft.AspNetCore.Http;
 
 namespace EducationalCourse.ApplicationService.Services.Implementations
 {
@@ -21,15 +19,19 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         #region Constructor
 
         private readonly ICourseRepository _courseRepository;
+        private readonly ICourseEpisodeService _courseEpisodeService;
         private readonly IFileManagerService _fileManagerService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICourseEpisodeRepository _episodeRepository;
-        public CourseService(ICourseRepository courseRepository, IFileManagerService fileManagerService, IUnitOfWork unitOfWork, ICourseEpisodeRepository episodeRepository)
+
+        public CourseService(ICourseRepository courseRepository,
+                             IFileManagerService fileManagerService,
+                             IUnitOfWork unitOfWork,
+                             ICourseEpisodeService courseEpisodeService)
         {
             _courseRepository = courseRepository;
             _fileManagerService = fileManagerService;
             _unitOfWork = unitOfWork;
-            _episodeRepository = episodeRepository;
+            _courseEpisodeService = courseEpisodeService;
         }
 
         #endregion Constructor
@@ -74,23 +76,27 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         {
             //ToDo fields validation  
             //Todo BuisinesRule
-
             var entity = MappingCourseEntity(request);
             await _courseRepository.AddAsync(entity, cancellationToken);
 
-            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
-
-            if (!result)
-                throw new AppException("عملیات ثبت خبر در دیتابیس با خطا مواجه شد");
-
-            return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد");
+            try
+            {
+                var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
+                return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد");
+            }
+            catch (Exception)
+            {
+                _fileManagerService.DeleteFile(FileTypeEnum.CourseVideo, entity.DemoVideo, entity.CourseTitle);
+                _fileManagerService.DeleteFile(FileTypeEnum.CourseImage, entity.CourseImageName, entity.CourseTitle);
+                throw;
+            }
         }
 
         //******************************** MappingCourseEntity ******************************
         private Course MappingCourseEntity(AddCourseDto request)
         {
-            var saveImageResult = _fileManagerService.SaveImageCourse(request.FormFile, request.CourseTitle);
-            var demoVideoName = _fileManagerService.SaveFile(request.DemoFile, request.DirectoryName);
+            var saveImageResult = _fileManagerService.SaveImage(FileTypeEnum.CourseImage, request.FormFile, request.CourseTitle);
+            var demoVideoName = _fileManagerService.SaveFile(FileTypeEnum.DemoCourseVideo, request.DemoFile, request.CourseTitle);
 
             return new Course
             {
@@ -169,66 +175,14 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return filter;
         }
 
-        //************************************* AddVideoFileToCourse ************************
-        public async Task<ApiResult> AddVideoFileToCourse(List<AddVideoFileCourseDto> request, CancellationToken cancellationToken)
-        {
-            var videoFiles = request.Select(c => c.VideoFiles).ToList();
-
-            var entities = MappingCourseEpisode(request);
-            await _episodeRepository.AddRangeAsync(entities, cancellationToken);
-
-            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
-
-            if (!result)
-                throw new AppException("عملیات ثبت در دیتابیس با خطا مواجه شد");
-
-            return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد");
-
-        }
-        //************************************* MappingCourseEpisode *************************
-        private List<CourseEpisode> MappingCourseEpisode(List<AddVideoFileCourseDto> request)
-        {
-            var result = new List<CourseEpisode>();
-
-            foreach (var item in request)
-            {
-                var fileName = _fileManagerService.SaveFile(item.VideoFiles, request.First().DirectoryName);
-                result.Add(new CourseEpisode
-                {
-                    CourseId = item.CourseId,
-                    EpisodeTime = item.EpisodeTime,
-                    IsFree = item.IsFree,
-                    IsActive = true,
-                    EpisodeFileName = fileName
-                });
-            }
-
-            return result;
-        }
-
-        //************************************* EditCourse ***********************************
+        //************************************* EditCourse **********************************
         public async Task<ApiResult> EditCourse(EditCourseDto request, CancellationToken cancellationToken)
         {
             //ToDo validation
             //ToDo business validation
-            var course = await _courseRepository.GetByIdAsync(request.Id, cancellationToken);
-            var saveImageResult = _fileManagerService.SaveImageCourse(request.FormFile, course.CourseTitle, course.CourseImageName);
-            var demoVideoName = _fileManagerService.SaveFile(request.FormFile, request.DirectoryName);
 
-            Course c = new Course();
-
-            c.CourseGroupId = request.CourseGroupId;
-            c.SubCourseGroupId = request.SubCourseGroupId;
-            c.CourseLevelId = request.CourseLevelId;
-            c.CourseStatusId = request.CourseStatusId;
-            c.TeacherId = request.TeacherId;
-            c.CourseTitle = request.CourseTitle;
-            c.CoursePrice = request.CoursePrice;
-            c.IsFreeCost = request.IsFreeCost;
-            c.CoursePrice = request.CoursePrice;
-            c.CourseImageBase64 = saveImageResult.AvatarBase64;
-            c.CourseImageName = saveImageResult.AvatarName;
-            c.DemoVideo = demoVideoName;
+            var entity = MappingCourseEorEdit(request);
+            _courseRepository.Update(entity);
 
             var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
 
@@ -238,14 +192,62 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
         }
 
-        public async Task<ApiResult> DeleteCourse(int id,string fileName, CancellationToken cancellationToken)
+        //************************************* MappingCourseEorEdit *************************
+        private Course MappingCourseEorEdit(EditCourseDto request)
         {
-            throw new NotImplementedException();
+            var course = _courseRepository.GetById(request.Id);
+            var saveImageResult = _fileManagerService.SaveImage(FileTypeEnum.CourseImage, request.FormFile, course.CourseTitle, course.CourseImageName);
+            var demoVideoName = _fileManagerService.SaveFile(FileTypeEnum.DemoCourseVideo, request.FormFile, request.DirectoryName);
+
+            course.CourseGroupId = request.CourseGroupId;
+            course.SubCourseGroupId = request.SubCourseGroupId;
+            course.CourseLevelId = request.CourseLevelId;
+            course.CourseStatusId = request.CourseStatusId;
+            course.TeacherId = request.TeacherId;
+            course.CourseTitle = request.CourseTitle;
+            course.CoursePrice = request.CoursePrice;
+            course.IsFreeCost = request.IsFreeCost;
+            course.CoursePrice = request.CoursePrice;
+            course.CourseImageBase64 = saveImageResult.AvatarBase64;
+            course.CourseImageName = saveImageResult.AvatarName;
+            course.DemoVideo = demoVideoName;
+            
+            return course;
+
         }
 
-        public Task<ApiResult> DeleteCourse(int id, CancellationToken cancellationToken)
+        //************************************* Delete ***************************************
+        public async Task<ApiResult> Delete(int courseId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+
+            using (var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken))
+            {
+                await DeleteCourse(courseId, cancellationToken);
+                await _courseEpisodeService.DeleteCourseEpisodeByCourseId(courseId, cancellationToken);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+            }
+
+            return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
+        }
+
+        //************************************* DeleteCourse *********************************
+        private async Task DeleteCourse(int courseId, CancellationToken cancellationToken)
+        {
+            var entity = await _courseRepository.GetByIdAsync(courseId, cancellationToken);
+            if (entity is null)
+                throw new AppException("موردی یافت نشد");
+
+            DeleteFiles(entity);
+            _courseRepository.LogicalDelete(entity.Id);
+        }
+
+        //************************************* DeleteFiles **********************************
+        private void DeleteFiles(Course? entity)
+        {
+            _fileManagerService.DeleteFile(FileTypeEnum.DemoCourseVideo, entity.DemoVideo, entity.CourseTitle);
+            _fileManagerService.DeleteFile(FileTypeEnum.CourseImage, entity.CourseImageName, entity.CourseTitle);
         }
     }
 }

@@ -19,10 +19,10 @@ namespace EducationalCourse.DataAccess.EF.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseGroup> CourseGroups { get; set; }
-        public DbSet<CourseGroup> CourseComments { get; set; }
-        public DbSet<CourseGroup> CourseEpisodes { get; set; }
-        public DbSet<CourseGroup> CourseStatuses { get; set; }
-        public DbSet<CourseGroup> CourseLeveles { get; set; }
+        public DbSet<CourseComment> CourseComments { get; set; }
+        public DbSet<CourseEpisode> CourseEpisodes { get; set; }
+        public DbSet<CourseStatus> CourseStatuses { get; set; }
+        public DbSet<CourseLevel> CourseLeveles { get; set; }
        
         #endregion DBSet
 

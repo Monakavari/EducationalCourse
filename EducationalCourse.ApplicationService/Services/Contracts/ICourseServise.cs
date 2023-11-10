@@ -12,10 +12,9 @@ namespace EducationalCourse.ApplicationService.Services.Contracts
         Task<ApiResult<List<FilterCourseDto>>> SearchCourseByTitle(string courseTitle, CancellationToken cancellationToken);
         Task<ApiResult<List<FilterCourseDto>>> GetLastCourses(CancellationToken cancellationToken);
         Task<ApiResult<List<FilterCourseDto>>> GetPopularCourses(CancellationToken cancellationToken);
-        Task<ApiResult> CreateCourse(AddCourseDto request,CancellationToken cancellationToken);
-        Task<ApiResult> EditCourse(EditCourseDto request,CancellationToken cancellationToken);
-        Task<ApiResult> DeleteCourse(int id,CancellationToken cancellationToken);
-        Task<ApiResult> AddVideoFileToCourse(List<AddVideoFileCourseDto> request,CancellationToken cancellationToken);
+        Task<ApiResult> CreateCourse(AddCourseDto request, CancellationToken cancellationToken);
+        Task<ApiResult> EditCourse(EditCourseDto request, CancellationToken cancellationToken);
+        Task<ApiResult> Delete(int id, CancellationToken cancellationToken);
         Task<DataGridResult<FilterCourseResponseDto>> GetFilterCourses(FilterCourseRequestDto request, CancellationToken cancellationTokenationToken);
     }
 }

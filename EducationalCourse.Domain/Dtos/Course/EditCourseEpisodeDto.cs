@@ -1,11 +1,15 @@
-﻿using EducationalCourse.Domain.Models.Base;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace EducationalCourse.Domain.Entities
+namespace EducationalCourse.Domain.Dtos.Course
 {
-    public class CourseEpisode:BaseEntity
+    public class EditCourseEpisodeDto
     {
         public int CourseId { get; set; }
-        public Course Course { get; set; }
+        public int CourseEpisodeId { get; set; }
         public string EpisodeTime { get; set; }
         public string EpisodeFileName { get; set; }
         public string EpisodeFileTitle { get; set; }

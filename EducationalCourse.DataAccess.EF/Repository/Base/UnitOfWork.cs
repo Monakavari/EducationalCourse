@@ -25,9 +25,9 @@ namespace Sample.DataAccess.EF.Repositories.Base
             return await Context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
         {
-            return await Context.Database.BeginTransactionAsync();
+            return await Context.Database.BeginTransactionAsync(cancellationToken);
         }
 
         public async Task TransactionCommit(IDbContextTransaction transaction)

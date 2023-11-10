@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EducationalCourse.Common.Dtos.Course
 {
@@ -16,9 +11,9 @@ namespace EducationalCourse.Common.Dtos.Course
         public int CourseStatusId { get; set; }
         public int TeacherId { get; set; }
         public string CourseTitle { get; set; }
+        public string DirectoryName { get; set; }
         public int CoursePrice { get; set; }
         public bool IsFreeCost { get; set; }
-        public string DirectoryName { get; set; }
         public IFormFile FormFile { get; set; }
         public IFormFile DemoFile { get; set; }
     }

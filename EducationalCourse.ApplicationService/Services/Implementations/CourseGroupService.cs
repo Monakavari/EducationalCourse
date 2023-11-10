@@ -45,7 +45,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             {
                 request.Add(new CourseGroupDto
                 {
-                    id = courseGroup.Id,
+                    Id = courseGroup.Id,
                     Title = courseGroup.CourseGroupTitle,
                     ParentId = courseGroup.ParentId,
                     Children = LoadChildren(courseGroupList, courseGroup.Id)
@@ -63,7 +63,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             {
                 children.Add(new CourseGroupDto
                 {
-                    id = courseGroup.Id,
+                    Id = courseGroup.Id,
                     Title = courseGroup.CourseGroupTitle,
                     ParentId = courseGroup.ParentId,
                     Children = LoadChildren(courseGroupList, courseGroup.Id)

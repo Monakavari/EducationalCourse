@@ -48,6 +48,11 @@ namespace EducationalCourse.IOC
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<ICourseGroupRepository, CourseGroupRepository>();
+            services.AddScoped<ICourseEpisodeRepository, CourseEpisodeRepository>();
+            services.AddScoped<ICourseCommentRepository, CourseCommentRepository>();
+            services.AddScoped<ICourseLevelRepository, CourseLevelRepository>();
+            services.AddScoped<ICourseStatusRepository, CourseStatusRepository>();
+
 
             #endregion Rejester Repository
 
@@ -57,6 +62,9 @@ namespace EducationalCourse.IOC
             services.AddScoped<ICourseServise, CourseService>();
             services.AddScoped<ICourseGroupService, CourseGroupService>();
             services.AddScoped<IFileManagerService, FileManagerService>();
+            services.AddScoped<ICourseEpisodeService, CourseEpisodeService>();
+            services.AddScoped<ICourseCommentService, CourseCommentService>();
+            services.AddScoped<IPrepareForViewService, PrepareForViewService>();
 
             #endregion Rejester Servises
 

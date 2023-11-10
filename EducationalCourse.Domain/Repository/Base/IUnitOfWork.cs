@@ -8,7 +8,7 @@ namespace EducationalCourse.Domain.ICommandRepositories.Base
 
         Task TransactionCommit(IDbContextTransaction transaction);
 
-        Task<IDbContextTransaction> BeginTransactionAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken);
 
         Task TransactionRollback(IDbContextTransaction transaction);
     }

@@ -1,4 +1,5 @@
 ﻿using EducationalCourse.ApplicationService.Services.Contracts;
+using EducationalCourse.Common.Enums;
 using EducationalCourse.Common.Utilities.Generator;
 using EducationalCourse.Domain.Dtos.FileManager;
 using Microsoft.AspNetCore.Hosting;
@@ -19,35 +20,15 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
 
         #endregion Constractor
 
-        //************************ SaveImageUserProfile ***********************
-        public SaveImageDto SaveImageCourse(IFormFile formFile, string courseName, string? oldImageCourseName = null)
+        //************************ SaveImage ***********************
+        public SaveImageDto SaveImage(FileTypeEnum fileType, IFormFile formFile, string directoryName, string? oldImageName = null)
         {
             string fileName = string.Empty;
             string base64String = string.Empty;
 
             if (formFile.Length > 0)
             {
-                string path = $"{env.WebRootPath}/Image/Courses/{courseName}";
-                fileName = UploadToServer(formFile, path, oldImageCourseName);
-                base64String = ToBase64String(formFile);
-            }
-
-            return new SaveImageDto()
-            {
-                AvatarBase64 = base64String,
-                AvatarName = fileName,
-            };
-        }
-
-        //************************ SaveImageUserProfile ***********************
-        public SaveImageDto SaveImageUserProfile(IFormFile formFile, string userName, string? oldImageName = null)
-        {
-            string fileName = string.Empty;
-            string base64String = string.Empty;
-
-            if (formFile.Length > 0)
-            {
-                string path = $"{env.WebRootPath}/Image/UserProfile/{userName}";
+                string path = GeneratePath(fileType, directoryName);
                 fileName = UploadToServer(formFile, path, oldImageName);
                 base64String = ToBase64String(formFile);
             }
@@ -59,29 +40,54 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             };
         }
 
-        //***********************************************
-        private string UploadToServer(IFormFile formFile, string path, string oldImageName)
+        //************************ SaveFile ***********************
+        public string SaveFile(FileTypeEnum fileType, IFormFile formFile, string directoryName, string? oldFileName = null)
         {
-            DeleteOldImage(oldImageName, path);
-            string fileName = UploadNewImage(formFile, path);
+            string fileName = string.Empty;
+
+            if (formFile.Length > 0)
+            {
+                string path = GeneratePath(fileType, directoryName);
+                fileName = UploadToServer(formFile, path, oldFileName);
+            }
 
             return fileName;
         }
 
-        //***********************************************
-        private void DeleteOldImage(string oldImageName, string path)
+        //************************ DeleteFile **********************
+        public void DeleteFile(FileTypeEnum fileType, string fileName, string directoryName)
         {
-            if (!string.IsNullOrWhiteSpace(oldImageName))
+            var filePath = Path.Combine(GeneratePath(fileType, directoryName), fileName);
+
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+        }
+
+        #region PrivateMethod
+
+        //********************* UploadToServer *********************
+        private string UploadToServer(IFormFile formFile, string path, string oldFileName)
+        {
+            DeleteOldFile(oldFileName, path);
+            string fileName = UploadNewFile(formFile, path);
+
+            return fileName;
+        }
+
+        //********************** DeleteOldFile ********************
+        private void DeleteOldFile(string oldFileName, string path)
+        {
+            if (!string.IsNullOrWhiteSpace(oldFileName))
             {
-                var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), path, oldImageName);
+                var oldImagePath = Path.Combine(path, oldFileName);
 
                 if (File.Exists(oldImagePath))
                     File.Delete(oldImagePath);
             }
         }
-        //***********************************************
 
-        private string UploadNewImage(IFormFile formFile, string path)
+        //**********************UploadNewImage*********************
+        private string UploadNewFile(IFormFile formFile, string path)
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -97,7 +103,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return fileName;
         }
 
-        //***********************************************
+        //**********************ToBase64String*********************
         private string ToBase64String(IFormFile formFile)
         {
             string base64String = string.Empty;
@@ -115,47 +121,36 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return base64String;
         }
 
-        //************************ SaveFile ***********************
-        public string SaveFile(IFormFile file, string directoryName)
+        #endregion PrivateMethod
+
+        #region GeneratePath
+
+        private string GeneratePath(FileTypeEnum fileType, string directoryName)
         {
-            string path = $"{env.WebRootPath}/Files/Courses/{directoryName}";
+            string path = string.Empty;
 
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            var fileName = NameGenerator.GenerateUniqCode() + Path.GetExtension(file.FileName);
-            var filePath = ($"{path}/{fileName}");
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            switch (fileType)
             {
-                file.CopyTo(stream);
+                case FileTypeEnum.CourseImage:
+                    path = $"{env.WebRootPath}/Images/Courses/{directoryName}";
+                    break;
+
+                case FileTypeEnum.UserImage:
+                    path = $"{env.WebRootPath}/Images/UserProfile/{directoryName}";
+                    break;
+
+                case FileTypeEnum.DemoCourseVideo:
+                    path = $"{env.WebRootPath}/Files/Courses/DemoVideos/{directoryName}";
+                    break;
+
+                case FileTypeEnum.CourseVideo:
+                    path = $"{env.WebRootPath}/Files/Courses/CourseVideos/{directoryName}";
+                    break;
             }
 
-            return fileName;
+            return path;
         }
 
-        //************************ SaveFiles ***********************
-        public List<string> SaveFiles(List<IFormFile> files, string directoryName)
-        {
-            var fileNames = new List<string>();
-            string path = $"{env.WebRootPath}/Files/Courses/{directoryName}";
-
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            foreach (var file in files)
-            {
-                var fileName = NameGenerator.GenerateUniqCode() + Path.GetExtension(file.FileName);
-                var filePath = ($"{path}/{fileName}");
-                fileNames.Add(fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
-            }
-
-            return fileNames;
-        }
+        #endregion GeneratePath
     }
 }

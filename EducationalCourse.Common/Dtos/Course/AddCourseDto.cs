@@ -12,7 +12,6 @@ namespace EducationalCourse.Common.Dtos
         public string CourseTitle { get; set; }
         public int CoursePrice { get; set; }
         public bool IsFreeCost { get; set; }
-        public string DirectoryName { get; set; }
         public IFormFile FormFile { get; set; }
         public IFormFile DemoFile { get; set; }
 
