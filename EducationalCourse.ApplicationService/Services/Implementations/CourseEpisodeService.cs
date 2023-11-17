@@ -93,7 +93,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
                 throw new AppException("موردی یافت نشد");
 
             _fileManagerService.DeleteFile(FileTypeEnum.CourseVideo, entity.EpisodeFileName, entity.Course.CourseTitle);
-            _episodeRepository.Delete(courseEpisodeId);
+            _episodeRepository.Delete(entity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد");
         }

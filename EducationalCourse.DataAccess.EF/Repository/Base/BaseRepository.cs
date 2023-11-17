@@ -47,9 +47,9 @@ namespace EducationalCourse.DataAccess.EF.Repositories.Base
             await Context.AddRangeAsync(entities);
         }
 
-        public void Delete(int id)
+        public void Delete(TEntity entity)
         {
-            Context.Remove(id);
+            Context.Remove(entity);
         }
 
         public void DeleteRange(IList<int> ids)

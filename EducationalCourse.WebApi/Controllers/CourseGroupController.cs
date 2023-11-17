@@ -39,5 +39,12 @@ namespace EducationalCourse.WebApi.Controllers
             var result = await _courseGroupService.AddChild(request, cancellationToken);
             return Ok(result);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteParent(int id, CancellationToken cancellationToken = default)
+        {
+            var result = await _courseGroupService.DeleteParent(id, cancellationToken);
+            return Ok(result);
+        }
     }
 }

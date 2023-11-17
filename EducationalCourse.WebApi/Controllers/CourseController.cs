@@ -68,5 +68,19 @@ namespace EducationalCourse.WebApi.Controllers
             var result = await _courseServise.Delete(id, cancellationToken);
             return Ok(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCourseSinglePageInfo(CancellationToken cancellationToken = default)
+        {
+            var result = await _courseServise.GetCourseSinglePageInfo(cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetFilterArchivedCourses(FilterArchivedCoursesRequestDto request, CancellationToken cancellationToken = default)
+        {
+            var result = await _courseServise.GetFilterArchivedCourses(request, cancellationToken);
+            return Ok(result);
+        }
     }
 }

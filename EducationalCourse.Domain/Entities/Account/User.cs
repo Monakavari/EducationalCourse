@@ -1,4 +1,5 @@
 ﻿using EducationalCourse.Domain.Entities;
+using EducationalCourse.Domain.Entities.Order;
 using EducationalCourse.Domain.Models.Base;
 
 namespace EducationalCourse.Domain.Models.Account
@@ -9,6 +10,7 @@ namespace EducationalCourse.Domain.Models.Account
         {
             CourseComments = new List<CourseComment>();
             Courses = new List<Course>();
+            Orders = new List<Order>();
         }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -20,6 +22,7 @@ namespace EducationalCourse.Domain.Models.Account
         public string ActiveCode { get; set; }
         public ICollection<CourseComment> CourseComments { get; set; }
         public ICollection<Course> Courses { get; set; }
+        public ICollection<Order> Orders { get; set; }
 
     }
 }

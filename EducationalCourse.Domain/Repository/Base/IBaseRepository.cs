@@ -12,7 +12,7 @@
 
         Task AddRangeAsync(IList<TEntity> entity, CancellationToken cancellationToken);
 
-        void Delete(int id);
+        void Delete(TEntity entity);
 
         void DeleteRange(IList<int> ids);
 

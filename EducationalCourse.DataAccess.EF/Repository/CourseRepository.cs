@@ -20,6 +20,23 @@ namespace EducationalCourse.DataAccess.EF.Repository
         #endregion Constructor
 
         //************************************** GetAllCourse *****************************************
+        public async Task<Course> GetCourseSinglePageInfo(CancellationToken cancellationToken)
+        {
+            var result = await _context.Courses
+                    .Include(x => x.CourseLevel)
+                    .Include(x => x.CourseStatus)
+                    .Include(x => x.User)
+                    .Include(x => x.CourseComments)
+                    .Include(x => x.CourseEpisodes)
+                    .Include(x => x.CourseGroup)
+                    .Include(x => x.SubCourseGroup)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(cancellationToken);
+
+            return result;
+        }
+
+        //************************************** GetAllCourse *****************************************
         public async Task<List<FilterCourseDto>> GetAllCourse(string courseTitle, CancellationToken cancellationTokenn)
         {
             var result = await _context.Courses

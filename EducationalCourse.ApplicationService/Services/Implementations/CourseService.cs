@@ -2,6 +2,7 @@
 using EducationalCourse.Common.Dtos;
 using EducationalCourse.Common.Dtos.Course;
 using EducationalCourse.Common.Enums;
+using EducationalCourse.Common.Extensions;
 using EducationalCourse.Domain.Dtos;
 using EducationalCourse.Domain.Dtos.Course;
 using EducationalCourse.Domain.Entities;
@@ -11,6 +12,7 @@ using EducationalCourse.Framework;
 using EducationalCourse.Framework.BasePaging.Dtos;
 using EducationalCourse.Framework.CustomException;
 using EducationalCourse.Framework.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace EducationalCourse.ApplicationService.Services.Implementations
 {
@@ -35,6 +37,66 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         }
 
         #endregion Constructor
+
+        //******************************** GetCourseSinglePageInfo **********************
+        public async Task<ApiResult<CourseSinglePageDto>> GetCourseSinglePageInfo(CancellationToken cancellationToken)
+        {
+            var courseEntity = await _courseRepository.GetCourseSinglePageInfo(cancellationToken);
+
+            CourseSinglePageDto result = MappingCourseSingle(courseEntity);
+
+            return new ApiResult<CourseSinglePageDto>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد.");
+        }
+
+        //****************************MappingCourseSingle********************************
+        private CourseSinglePageDto MappingCourseSingle(Course courseEntity)
+        {
+            var result = new CourseSinglePageDto();
+
+            result.CreateDate = courseEntity.CreateDate;
+            result.ShowCreateDate = courseEntity.CreateDate.ToShamsi();
+            result.UpdateDate = courseEntity.UpdateDate;
+            result.ShowUpdateDate = courseEntity.UpdateDate.ToShamsi();
+            result.TeacherId = courseEntity.TeacherId;
+            result.TeacherName = courseEntity.User.FirstName + " " + courseEntity.User.LastName;
+            result.TotalEpisodeFileCount = courseEntity.CourseEpisodes.Count;
+            result.StatusId = courseEntity.CourseStatusId;
+            result.StatusTitle = courseEntity.CourseStatus.Title;
+            result.LevelId = courseEntity.CourseLevelId;
+            result.LevelTitle = courseEntity.CourseLevel.Title;
+            result.CoursePrice = courseEntity.CoursePrice;
+            result.CourseId = courseEntity.Id;
+            result.CourseGroupId = courseEntity.CourseGroupId;
+            result.CourseGroupTitle = courseEntity.CourseGroup.CourseGroupTitle;
+            result.SubCourseGroupId = courseEntity.SubCourseGroupId;
+            result.SubCourseGroupTitle = courseEntity.SubCourseGroup?.CourseGroupTitle;
+
+            foreach (var courseEpisode in courseEntity.CourseEpisodes)
+            {
+                result.Episodes.Add(new CourseEpisodeForSinglePageDto
+                {
+                    EpisodeFileName = courseEpisode.EpisodeFileName,
+                    EpisodeFileTitle = courseEpisode.EpisodeFileTitle,
+                    EpisodeTime = courseEpisode.EpisodeTime,
+                    IsFree = courseEpisode.IsFree,
+                    EpisodeTimeSpan = TimeSpan.Parse(courseEpisode.EpisodeTime),
+                });
+            }
+
+            foreach (var courseComment in courseEntity.CourseComments)
+            {
+                result.Comments.Add(new CourseCommentForSinglePageDto
+                {
+                    CourseId = courseComment.CourseId,
+                    FirstName = courseComment.User.FirstName,
+                    LastName = courseComment.User.LastName,
+                    Text = courseComment.Text,
+                    UserId = courseComment.User.Id,
+                });
+            }
+
+            return result;
+        }
 
         //******************************** SearchCourseByTitle *****************************
         public async Task<ApiResult<List<FilterCourseDto>>> SearchCourseByTitle(string courseTitle, CancellationToken cancellationToken)
@@ -211,7 +273,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             course.CourseImageBase64 = saveImageResult.AvatarBase64;
             course.CourseImageName = saveImageResult.AvatarName;
             course.DemoVideo = demoVideoName;
-            
+
             return course;
 
         }
@@ -248,6 +310,76 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         {
             _fileManagerService.DeleteFile(FileTypeEnum.DemoCourseVideo, entity.DemoVideo, entity.CourseTitle);
             _fileManagerService.DeleteFile(FileTypeEnum.CourseImage, entity.CourseImageName, entity.CourseTitle);
+        }
+
+        //************************************* GetFilterArchivedCourses *********************
+        public async Task<DataGridResult<FilterArchivedCoursesResponseDto>> GetFilterArchivedCourses(FilterArchivedCoursesRequestDto request, CancellationToken cancellationTokenationToken)
+        {
+            var result = new DataGridResult<FilterArchivedCoursesResponseDto>();
+            var courseEntity = await Filter(request);
+
+            result.Total = courseEntity.Total;
+            result.Data = courseEntity.Data
+                .Select(x => new FilterArchivedCoursesResponseDto
+                {
+                    CourseTitle = x.CourseTitle,
+                    CourseImageBase64 = x.CourseImageBase64,
+                    CourseImageName = x.CourseImageName,
+                    CourseLevelId = x.CourseLevelId,
+                    CourseStatusId = x.CourseStatusId,
+                    IsFreeCost = x.IsFreeCost,
+                    TeacherId = x.TeacherId,
+                    ViewCount = x.ViewCount
+
+                }).ToList();
+
+            return result;
+        }
+
+        //************************************* Filter **************************************
+        private async Task<DataGridResult<Course>> Filter(FilterArchivedCoursesRequestDto request)
+        {
+            var expresion = _courseRepository
+                .FetchIQueryableEntity()
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.CourseTitle))
+                expresion = expresion.Where(x => x.CourseTitle.Contains(request.CourseTitle));
+
+            if (request.CourseGroupIds is not null && !request.CourseGroupIds.Any())
+                expresion = expresion.Where(x => request.CourseGroupIds.Contains(x.CourseGroupId));
+
+            if (request.SubCourseGroupIds is not null && !request.SubCourseGroupIds.Any())
+                expresion = expresion.Where(x => x.SubCourseGroupId.HasValue && request.SubCourseGroupIds.Contains(x.SubCourseGroupId.Value));
+
+            if (request.IsFreeCost is true)
+                expresion = expresion.Where(x => x.IsFreeCost == request.IsFreeCost);
+
+            if (request.StartPrice.HasValue && request.StartPrice != 0)
+                expresion = expresion.Where(x => x.CoursePrice >= request.StartPrice);
+
+            if (request.EndPrice.HasValue && request.EndPrice != 0)
+                expresion = expresion.Where(x => x.CoursePrice <= request.EndPrice);
+
+            if (request.OrderByType == OrderByEnum.MinPrice)
+                expresion = expresion.OrderBy(x => x.CoursePrice);
+
+            if (request.OrderByType == OrderByEnum.MaxPrice)
+                expresion = expresion.OrderByDescending(x => x.CoursePrice);
+
+            if (request.OrderByType == OrderByEnum.MaxPrice)
+                expresion = expresion.OrderByDescending(x => x.CoursePrice);
+
+            var filter = await expresion
+                .ApplyPaging(new GridState
+                {
+                    Take = request.Take,
+                    Skip = request.Skip,
+                    Dir = request.Dir
+                });
+
+            return filter;
         }
     }
 }

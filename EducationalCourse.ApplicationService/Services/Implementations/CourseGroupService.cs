@@ -6,6 +6,7 @@ using EducationalCourse.Domain.Repository;
 using EducationalCourse.Framework;
 using EducationalCourse.Framework.CustomException;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace EducationalCourse.ApplicationService.Services.Implementations
 {
@@ -79,10 +80,8 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
                 throw new AppException("عنوان نمی تواند خالی باشد");
 
             if (await _courseGroupRepository.ExistCourseGroupName(request.CourseGroupTitle, cancellationToken))
-            {
                 throw new AppException("عنوان نمی تواند تکراری باشد");
 
-            }
             CourseGroup courseGroup = new CourseGroup
             {
                 CourseGroupTitle = request.CourseGroupTitle,
@@ -90,9 +89,9 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             };
 
             await _courseGroupRepository.AddAsync(courseGroup, cancellationToken);
-            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken))> default(int);
+            var result = (await _unitOfWork.SaveChangesAsync(cancellationToken)) > default(int);
 
-            if(!result)
+            if (!result)
                 throw new AppException("عملیات ثبت خبر در دیتابیس با خطا مواجه شد");
 
 
@@ -114,7 +113,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             CourseGroup courseGroup = new CourseGroup
             {
                 CourseGroupTitle = request.CourseGroupTitle,
-                Id = request.ParentId,
+                ParentId = request.Id,
             };
 
             await _courseGroupRepository.AddAsync(courseGroup, cancellationToken);
@@ -124,6 +123,32 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
                 throw new AppException("عملیات ثبت خبر در دیتابیس با خطا مواجه شد");
 
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
+        }
+
+        //************************************* DeleteParent ****************************************
+        public async Task<ApiResult> DeleteParent(int id, CancellationToken cancellationToken)
+        {
+            var courseGroup = await _courseGroupRepository.GetByIdAsync(id, cancellationToken);
+            DeleteChild(id);
+            _courseGroupRepository.Delete(courseGroup);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
+        }
+
+        //************************************* DeleteChild ******************************************
+        private void DeleteChild(int id)
+        {
+            var children = _courseGroupRepository
+                    .FetchIQueryableEntity()
+                    .Where(x => x.ParentId == id)
+                    .ToList();
+
+            foreach (var item in children)
+            {
+                _courseGroupRepository.Delete(item);
+                DeleteChild(item.Id);
+            }
         }
     }
 

@@ -18,7 +18,10 @@ namespace EducationalCourse.Framework.Extensions
                     Dir = "desc"
                 };
 
-            request.Skip = request.Skip - 1 * request.Take;
+            if(request.Take == 0) request.Take = 10;
+            if(request.Skip == 0) request.Skip = 1;
+
+            request.Skip = (request.Skip - 1) * request.Take;
 
             result.Total = expression.Count();
             result.Data = await expression

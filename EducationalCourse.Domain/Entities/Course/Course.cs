@@ -1,4 +1,5 @@
-﻿using EducationalCourse.Domain.Models.Account;
+﻿using EducationalCourse.Domain.Entities.Order;
+using EducationalCourse.Domain.Models.Account;
 using EducationalCourse.Domain.Models.Base;
 
 namespace EducationalCourse.Domain.Entities
@@ -9,6 +10,7 @@ namespace EducationalCourse.Domain.Entities
         {
             CourseComments = new List<CourseComment>();
             CourseEpisodes = new List<CourseEpisode>();
+            OrderDetails = new List<OrderDetail>();
         }
 
         /// <summary>
@@ -50,6 +52,8 @@ namespace EducationalCourse.Domain.Entities
         public string DemoVideo { get; set; }
         public ICollection<CourseComment> CourseComments { get; set; }
         public ICollection<CourseEpisode> CourseEpisodes { get; set; }
+        public ICollection<OrderDetail> OrderDetails { get; set; }
+
 
     }
 }

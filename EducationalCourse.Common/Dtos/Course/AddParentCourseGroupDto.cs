@@ -9,7 +9,6 @@ namespace EducationalCourse.Domain.Dtos.Course
     public class AddParentCourseGroupDto
     {
         public string CourseGroupTitle { get; set; }
-        public int? ParentId { get; set; }
 
     }
 }
