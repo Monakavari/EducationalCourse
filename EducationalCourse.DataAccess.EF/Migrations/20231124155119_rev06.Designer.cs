@@ -4,6 +4,7 @@ using EducationalCourse.DataAccess.EF.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalCourse.DataAccess.EF.Migrations
 {
     [DbContext(typeof(EducationalCourseContext))]
-    partial class EducationalCourseContextModelSnapshot : ModelSnapshot
+    [Migration("20231124155119_rev06")]
+    partial class rev06
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -443,6 +446,10 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -459,6 +466,9 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WalletType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -503,9 +513,6 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("WalletId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WalletType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

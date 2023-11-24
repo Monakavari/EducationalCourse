@@ -7,16 +7,14 @@ namespace EducationalCourse.Domain.Entities.Order
     {
         public Order()
         {
-            OredrDetails = new List<OrderDetail>();
+            OrderDetails = new List<OrderDetail>();
+            
         }
         public int UserId { get; set; }
         public User User { get; set; }
-
-        public decimal Discount { get; set; }
         public decimal TotalPayment { get; set; }
-        public bool IsPaid { get; set; }
-
-        public ICollection<OrderDetail> OredrDetails { get; set; }
-
+        public bool IsFinally { get; set; }
+        public DateTime? PaymentDate { get; set; }
+        public ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

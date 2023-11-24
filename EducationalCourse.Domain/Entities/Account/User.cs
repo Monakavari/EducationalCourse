@@ -11,6 +11,9 @@ namespace EducationalCourse.Domain.Models.Account
             CourseComments = new List<CourseComment>();
             Courses = new List<Course>();
             Orders = new List<Order>();
+            UserCourses=new List<UserCourse>();
+            Wallets = new List<Wallet>();
+
         }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -23,6 +26,9 @@ namespace EducationalCourse.Domain.Models.Account
         public ICollection<CourseComment> CourseComments { get; set; }
         public ICollection<Course> Courses { get; set; }
         public ICollection<Order> Orders { get; set; }
+        public ICollection<UserCourse> UserCourses { get; set; }
+        public ICollection<Wallet> Wallets { get; set; }
+
 
     }
 }

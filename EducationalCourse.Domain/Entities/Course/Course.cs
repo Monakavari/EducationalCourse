@@ -11,6 +11,7 @@ namespace EducationalCourse.Domain.Entities
             CourseComments = new List<CourseComment>();
             CourseEpisodes = new List<CourseEpisode>();
             OrderDetails = new List<OrderDetail>();
+            UserCourses = new List<UserCourse>();
         }
 
         /// <summary>
@@ -53,6 +54,8 @@ namespace EducationalCourse.Domain.Entities
         public ICollection<CourseComment> CourseComments { get; set; }
         public ICollection<CourseEpisode> CourseEpisodes { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
+        public ICollection<UserCourse> UserCourses { get; set; }
+
 
 
     }

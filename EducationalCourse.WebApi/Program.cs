@@ -1,14 +1,44 @@
+using EducationalCourse.Common.DTOs.Configurations;
 using EducationalCourse.Framework.Infrastructure.Extensions;
 using EducationalCourse.IOC;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog.Web;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 //var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+var _siteSetting = builder.Configuration.GetSection(nameof(SiteSettings)).Get<SiteSettings>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+#region Security JWT
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = _siteSetting.TokenSettings.Issuer,
+        ValidAudience = _siteSetting.TokenSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_siteSetting.TokenSettings.SecretKey!)),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+    };
+});
+
+builder.Services.AddAuthorization();
+
+#endregion Security JWT
 
 #region Swagger
 

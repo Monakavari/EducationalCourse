@@ -4,6 +4,7 @@ using EducationalCourse.DataAccess.EF.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalCourse.DataAccess.EF.Migrations
 {
     [DbContext(typeof(EducationalCourseContext))]
-    partial class EducationalCourseContextModelSnapshot : ModelSnapshot
+    [Migration("20231123165557_rev05")]
+    partial class rev05
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -443,6 +446,10 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -461,14 +468,19 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int>("WalletTypeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("WalletTypeId");
+
                     b.ToTable("Wallets");
                 });
 
-            modelBuilder.Entity("EducationalCourse.Domain.Entities.WalletTransaction", b =>
+            modelBuilder.Entity("EducationalCourse.Domain.Entities.WalletType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -479,17 +491,6 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CreditAmount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DepositAmount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -499,20 +500,17 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Property<string>("Log")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("WalletId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WalletType")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("WalletId");
-
-                    b.ToTable("WalletTransactions");
+                    b.ToTable("WalletTypes");
                 });
 
             modelBuilder.Entity("EducationalCourse.Domain.Models.Account.User", b =>
@@ -723,18 +721,15 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EducationalCourse.Domain.Entities.WalletTransaction", b =>
-                {
-                    b.HasOne("EducationalCourse.Domain.Entities.Wallet", "Wallet")
-                        .WithMany("WalletTransactions")
-                        .HasForeignKey("WalletId")
+                    b.HasOne("EducationalCourse.Domain.Entities.WalletType", "WalletType")
+                        .WithMany("Wallets")
+                        .HasForeignKey("WalletTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Wallet");
+                    b.Navigation("User");
+
+                    b.Navigation("WalletType");
                 });
 
             modelBuilder.Entity("EducationalCourse.Domain.Entities.Course", b =>
@@ -777,9 +772,9 @@ namespace EducationalCourse.DataAccess.EF.Migrations
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("EducationalCourse.Domain.Entities.Wallet", b =>
+            modelBuilder.Entity("EducationalCourse.Domain.Entities.WalletType", b =>
                 {
-                    b.Navigation("WalletTransactions");
+                    b.Navigation("Wallets");
                 });
 
             modelBuilder.Entity("EducationalCourse.Domain.Models.Account.User", b =>

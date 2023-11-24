@@ -15,7 +15,7 @@ namespace EducationalCourse.DataAccess.EF.Configurations
         {
             builder
                .HasOne(x => x.Order)
-               .WithMany(x => x.OredrDetails)
+               .WithMany(x => x.OrderDetails)
                .HasForeignKey(x => x.OrderId)
                .OnDelete(DeleteBehavior.Restrict);
 

@@ -18,4 +18,10 @@
         CourseTime = 5,
         PublishTime = 6
     }
+
+    public enum WalletTypeEnum : int
+    {
+        Credit = 2, //واریز به حساب
+        Deposit = 3,//برداشت از حساب
+    }
 }
