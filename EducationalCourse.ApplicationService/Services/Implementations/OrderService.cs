@@ -6,6 +6,8 @@ using EducationalCourse.Domain.Entities.Order;
 using EducationalCourse.Domain.ICommandRepositories.Base;
 using EducationalCourse.Domain.Repository;
 using EducationalCourse.Framework;
+using EducationalCourse.Framework.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace EducationalCourse.ApplicationService.Services.Implementations
 {
@@ -14,26 +16,32 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         #region Constructor
 
         private readonly IOrderRepository _orderRepository;
+        private readonly IWalletRepository _walletRepository;
         private readonly IOrderDetailRepository _orderDetailRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static int _userId = 0;
         public OrderService(IOrderRepository orderRepository,
                      IUnitOfWork unitOfWork,
                      IUserRepository userRepository,
                      ICourseRepository courseRepository,
-                     IOrderDetailRepository orderDetailRepository)
+                     IOrderDetailRepository orderDetailRepository,
+                     IHttpContextAccessor httpContextAccessor,
+                     IWalletRepository walletRepository)
         {
             _orderRepository = orderRepository;
             _unitOfWork = unitOfWork;
             _userRepository = userRepository;
             _courseRepository = courseRepository;
             _orderDetailRepository = orderDetailRepository;
+            _httpContextAccessor = httpContextAccessor;
+            _walletRepository = walletRepository;
+            _userId = _httpContextAccessor.GetUserId();
         }
 
         #endregion Constructor
-
-        #region Order
 
         //*******************************************CreateUserOrder************************************************
         public async Task<ApiResult> CreateUserOrder(int userId, int courseId, CancellationToken cancellationToken)
@@ -128,12 +136,59 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return new ApiResult<GetUserOrderForPannelDto>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد");
         }
 
+        //******************************************* GetOrderById ********************************************
+        public async Task<Order> GetOrderById(int orderId, CancellationToken cancellationToken)
+        {
+            var order = await _orderRepository.GetOrderById(orderId, cancellationToken);
+            return order;
+        }
 
-        #endregion  Order
+        //******************************************* GetUserOrders ********************************************
+        public async Task<ApiResult<List<GetUserOrdersDto>>> GetUserOrders(CancellationToken cancellationToken)
+        {
+            var result = new List<GetUserOrdersDto>();
 
-        #region Order detail
+            var orderList = await _orderRepository.GetUserOrders(_userId, cancellationToken);
+            if (orderList == null)
+                throw new Exception("سفارشی یافت نشد.");
 
+            MappOrder(result, orderList);
 
-        #endregion Order detail
+            return new ApiResult<List<GetUserOrdersDto>>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد.");
+
+        }
+
+        private void MappOrder(List<GetUserOrdersDto> result, List<Order> orderList)
+        {
+            foreach (var order in orderList)
+            {
+                result.Add(new GetUserOrdersDto
+                {
+                    PaymentDateDisplay = order.PaymentDate.HasValue ? order.PaymentDate.Value.ToShamsi() : null,
+                    TotalPayment = order.TotalPayment,
+                    OrderDetails = MappOrderDetails(order)
+                });
+            };
+        }
+
+        private List<OrderDetailDto> MappOrderDetails(Order order)
+        {
+            var result = new List<OrderDetailDto>();
+
+            foreach (var item in order.OrderDetails)
+            {
+                result.Add(new OrderDetailDto
+                {
+                    OrderId = item.OrderId,
+                    Count = item.Count,
+                    CourseId = item.CourseId,
+                    Price = item.Price,
+                });
+            }
+
+            return result;
+        }
     }
 }
+
+

@@ -54,6 +54,10 @@ namespace EducationalCourse.IOC
             services.AddScoped<ICourseStatusRepository, CourseStatusRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+            services.AddScoped<IWalletRepository, WalletRepository>();
+            services.AddScoped<IUserCourseRepository, UserCourseRepository>();
+            services.AddScoped<IDiscountRepository, DiscountRepository>();
+
 
 
             #endregion Rejester Repository
@@ -68,6 +72,10 @@ namespace EducationalCourse.IOC
             services.AddScoped<ICourseCommentService, CourseCommentService>();
             services.AddScoped<IPrepareForViewService, PrepareForViewService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IWalletService, WalletService>();
+            services.AddScoped<IUserCourseService, UserCourseService>();
+            services.AddScoped<IDiscountService, DiscountService>();
+
 
             #endregion Rejester Servises
 

@@ -10,11 +10,9 @@ namespace EducationalCourse.Domain.Entities
         {
             WalletTransactions = new List<WalletTransaction>();
         }
-        public bool IsPay { get; set; }
         public int Amount { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
-
         public ICollection<WalletTransaction> WalletTransactions { get; set; }
 
     }

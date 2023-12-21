@@ -13,7 +13,6 @@ namespace EducationalCourse.DataAccess.EF.Configurations
                  .WithMany(x => x.Wallets)
                  .HasForeignKey(x => x.UserId)
                  .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }

@@ -2,9 +2,7 @@
 {
     public class OrderForDepositDto
     {
-        public int Id { get; set; }
-        public int TotalPayment { get; set; }
-        public bool IsFinally { get; set; }
-
+        public int OrderId { get; set; }
+    
     }
 }

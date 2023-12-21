@@ -5,6 +5,7 @@ using EducationalCourse.Common.Enums;
 using EducationalCourse.Common.Extensions;
 using EducationalCourse.Domain.Dtos.Wallet;
 using EducationalCourse.Domain.Entities;
+using EducationalCourse.Domain.Entities.Order;
 using EducationalCourse.Domain.ICommandRepositories.Base;
 using EducationalCourse.Domain.Repository;
 using EducationalCourse.Framework;
@@ -14,24 +15,30 @@ using Microsoft.AspNetCore.Http;
 
 namespace EducationalCourse.ApplicationService.Services.Implementations
 {
-    public class WalletService : IWalletServicecs
+    public class WalletService : IWalletService
     {
         #region Constructor
 
         private readonly IWalletRepository _walletRepository;
+        private readonly IOrderService _orderService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWork _UnitOfWork;
+        private readonly IUserCourseService _userCourseService;
         private static int _userId = 0;
 
         public WalletService(IWalletRepository walletRepository,
                              IUserRepository userRepository,
                              IHttpContextAccessor httpContextAccessor,
-                             IUnitOfWork unitOfWork)
+                             IUnitOfWork unitOfWork,
+                             IOrderService orderService,
+                             IUserCourseService userCourseService)
         {
             _walletRepository = walletRepository;
             _httpContextAccessor = httpContextAccessor;
             _UnitOfWork = unitOfWork;
             _userId = httpContextAccessor.GetUserId();
+            _orderService = orderService;
+            _userCourseService = userCourseService;
         }
 
         #endregion Constructor
@@ -44,39 +51,24 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
                 throw new AppException("برای کاربر جاری کیف پولی یافت نشد");
 
             wallet.UpdateDate = DateTime.Now;
-            wallet.Amount = request.Amount;
-            wallet.WalletTransactions = CreateWalletTransction(wallet, request);
-
+            wallet.Amount += request.Amount;
+            CreateWalletTransction(wallet, request);
             await _UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
         }
 
-        private List<WalletTransaction> CreateWalletTransction(Wallet wallet, ChargeWalletDto request)
+        //*********************************************
+        private void CreateWalletTransction(Wallet wallet, ChargeWalletDto request)
         {
-            return new List<WalletTransaction>
+            wallet.WalletTransactions.Add(new WalletTransaction
             {
-                new WalletTransaction
-                {
-                    WalletId = wallet.Id,
-                    CreditAmount = request.Amount,
-                    IsActive = true,
-                    Description = "شارژ حساب",
-                    WalletType = WalletTypeEnum.Credit
-                }
-            };
-        }
-
-        //*************************************** BalanceUserWallet **********************************
-        public async Task<ApiResult<int>> BalanceUserWallet(CancellationToken cancellationToken)
-        {
-            var deposit = await _walletRepository.Deposit(_userId, cancellationToken);
-            var credit = await _walletRepository.Credit(_userId, cancellationToken);
-
-            var result = (credit.Sum() - deposit.Sum());
-
-            return new ApiResult<int>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت  انجام شد.");
-
+                IsActive = true,
+                Amount = request.Amount,
+                Description = request.Description,
+                WalletId = wallet.Id,
+                WalletType = WalletTypeEnum.Credit
+            });
         }
 
         //*************************************** GetUserWallet **************************************
@@ -100,32 +92,70 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return new ApiResult<List<GetUserWalletDto>>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت  انجام شد.");
         }
 
-        //*************************************** RegisterAndFinalPayment **************************************
+        /// <summary>
+        /// ساخت کیف پول و پرداخت و خرید دوره
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+
+        #region RegisterAndFinalPayment
+
+        //****************************** RegisterAndFinalPayment ****************************
         public async Task<ApiResult> RegisterAndFinalPayment(OrderForDepositDto request, CancellationToken cancellationToken)
         {
             var wallet = await _walletRepository.GetWalletByUserId(_userId, cancellationToken);
-
-            if (wallet is null)
-            {
-                wallet = await CreateWallet(cancellationToken);
-                await CreditToWallet(wallet, request.TotalPayment, cancellationToken);
-                //ToDo deposit from wallet
-                return new ApiResult(true, ApiResultStatusCode.Success);
-            }
-            else if (wallet.Amount < request.TotalPayment)
-                throw new AppException("موجودی کیف پول کافی نمیباشد");
-
-            await CreditToWallet(wallet, request.TotalPayment, cancellationToken);
-            //ToDo deposit from wallet
+            var order = await GetOrder(request, cancellationToken);
+            await NotExistWallet(wallet, order, cancellationToken);
+            await ExistWallet(wallet, order, cancellationToken);
 
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
         }
 
+        //***********************************************************
+        private async Task<Order> GetOrder(OrderForDepositDto request, CancellationToken cancellationToken)
+        {
+            var order = await _orderService.GetOrderById(request.OrderId, cancellationToken);
+            if (order is null)
+                throw new AppException("سفارشی یافت نشد.");
+
+            return order;
+        }
+
+        //***********************************************************
+        private async Task NotExistWallet(Wallet? wallet, Order order, CancellationToken cancellationToken)
+        {
+            if (wallet is null)
+            {
+                wallet = await CreateWallet(cancellationToken);
+                CreditToWallet(wallet, order);
+                DepositFromWallet(wallet, order);
+                order.IsFinally = true;
+                await _userCourseService.CreateUserCourse(order.OrderDetails.ToList(), _userId, cancellationToken);
+                await _UnitOfWork.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        //***********************************************************
+        private async Task ExistWallet(Wallet? wallet, Order order, CancellationToken cancellationToken)
+        {
+            if (wallet is not null)
+            {
+                if (wallet.Amount < order.TotalPayment)
+                    throw new AppException("موجودی کیف پول کافی نمیباشد.لطفا کیف پول خود را شارژ کنید.");
+
+                DepositFromWallet(wallet, order);
+                order.IsFinally = true;
+                await _userCourseService.CreateUserCourse(order.OrderDetails.ToList(), _userId, cancellationToken);
+                await _UnitOfWork.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        //***********************************************************
         private async Task<Wallet> CreateWallet(CancellationToken cancellationToken)
         {
             var wallet = new Wallet
             {
-                IsPay = false,
                 Amount = 0,
                 IsActive = true,
                 UserId = _userId,
@@ -136,24 +166,40 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             return wallet;
         }
 
-        private async Task CreditToWallet(Wallet wallet, int totalPayment, CancellationToken cancellationToken)
+        //***********************************************************
+        private void CreditToWallet(Wallet wallet, Order order)
         {
             //فرض میکنیم وارد درگاه شدیم و به اندازه پول سفارش ما در درگاه پرداختی انجام دادیم 
             //از درگاه با موقثیت برگشتیم 
-            wallet.Amount = totalPayment;
+            wallet.Amount = order.TotalPayment;
             wallet.UpdateDate = DateTime.Now;
             wallet.WalletTransactions.Add(new WalletTransaction
             {
                 CreateDate = wallet.CreateDate,
-                CreditAmount = totalPayment,
-                DepositAmount = 0,
-                Description = "",
+                Amount = order.TotalPayment,
+                Description = "واریز به حساب",
                 IsActive = true,
                 WalletId = wallet.Id,
                 WalletType = WalletTypeEnum.Credit
             });
-
-            await _UnitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+        //***********************************************************
+        private void DepositFromWallet(Wallet wallet, Order order)
+        {
+            wallet.Amount -= (int)order.TotalPayment;
+            wallet.UpdateDate = DateTime.Now;
+            wallet.WalletTransactions.Add(new WalletTransaction
+            {
+                CreateDate = wallet.CreateDate,
+                Amount = (int)order.TotalPayment,
+                Description = "برداشت از حساب",
+                IsActive = true,
+                WalletId = wallet.Id,
+                WalletType = WalletTypeEnum.Deposit
+            });
+        }
+
+        #endregion RegisterAndFinalPayment
     }
 }

@@ -22,7 +22,15 @@ namespace Sample.DataAccess.EF.Repositories.Base
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await Context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                return await Context.SaveChangesAsync(cancellationToken);
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)

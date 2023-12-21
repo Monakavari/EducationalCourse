@@ -5,12 +5,11 @@ using EducationalCourse.Framework;
 
 namespace EducationalCourse.ApplicationService.Services.Contracts
 {
-    public interface IWalletServicecs
+    public interface IWalletService
     {
         Task<ApiResult> ChargeWallet(ChargeWalletDto request, CancellationToken cancellationToken);
         Task<ApiResult> RegisterAndFinalPayment(OrderForDepositDto request, CancellationToken cancellationToken);
-        Task<ApiResult<int>> BalanceUserWallet(CancellationToken cancellationToken);
-        Task<ApiResult<List<GetUserWalletDto>>> GetUserWallet(CancellationToken cancellationToken);
+                Task<ApiResult<List<GetUserWalletDto>>> GetUserWallet(CancellationToken cancellationToken);
 
 
     }

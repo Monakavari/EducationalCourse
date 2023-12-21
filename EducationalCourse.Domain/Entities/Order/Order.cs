@@ -12,7 +12,7 @@ namespace EducationalCourse.Domain.Entities.Order
         }
         public int UserId { get; set; }
         public User User { get; set; }
-        public decimal TotalPayment { get; set; }
+        public int TotalPayment { get; set; }
         public bool IsFinally { get; set; }
         public DateTime? PaymentDate { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }

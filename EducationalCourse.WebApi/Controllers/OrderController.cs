@@ -29,5 +29,12 @@ namespace EducationalCourse.WebApi.Controllers
             var result = await _orderService.GetOrderForUserPannel(userId, courseId, cancellationToken);
             return Ok(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserOrders(CancellationToken cancellationToken = default)
+        {
+            var result = await _orderService.GetUserOrders(cancellationToken);
+            return Ok(result);
+        }
     }
 }

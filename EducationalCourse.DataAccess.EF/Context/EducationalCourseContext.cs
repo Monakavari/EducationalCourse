@@ -29,6 +29,7 @@ namespace EducationalCourse.DataAccess.EF.Context
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<WalletTransaction> WalletTransactions { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
        
               
         #endregion DBSet
