@@ -28,7 +28,9 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         //************************************* LoadCourseGroupParentChaild *************************
         public async Task<ApiResult<List<CourseGroupDto>>> GetAllCourseGroups(CancellationToken cancellationToken)
         {
-            var courseGroupList = await _courseGroupRepository.FetchIQueryableEntity().Where(x => x.IsActive).ToListAsync(cancellationToken);
+            var courseGroupList = await _courseGroupRepository.FetchIQueryableEntity()
+                                                              .Where(x => x.IsActive)
+                                                              .ToListAsync(cancellationToken);
             var result = new List<CourseGroupDto>();
 
             if (courseGroupList is null)

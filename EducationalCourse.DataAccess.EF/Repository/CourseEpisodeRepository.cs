@@ -24,7 +24,7 @@ namespace EducationalCourse.DataAccess.EF.Repository
         public async Task<List<CourseEpisodeDto>> GetAllCourseEpisodeByCourseId(int courseId, CancellationToken cancellationToken)
         {
             var result = await _context.CourseEpisodes
-                               .Where(x => x.Id == courseId)
+                               .Where(x => x.CourseId == courseId)
                                .Select(x => new CourseEpisodeDto
                                {
                                    EpisodeTime = x.EpisodeTime,
@@ -41,7 +41,7 @@ namespace EducationalCourse.DataAccess.EF.Repository
         public async Task<List<CourseEpisode>> GetAllCourseEpisode(int courseId, CancellationToken cancellationToken)
         {
             return await _context.CourseEpisodes
-                               .Where(x => x.Id == courseId)
+                               .Where(x => x.CourseId == courseId)
                               .ToListAsync(cancellationToken);
                         
         }

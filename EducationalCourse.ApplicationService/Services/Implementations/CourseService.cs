@@ -269,7 +269,6 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             course.CourseTitle = request.CourseTitle;
             course.CoursePrice = request.CoursePrice;
             course.IsFreeCost = request.IsFreeCost;
-            course.CoursePrice = request.CoursePrice;
             course.CourseImageBase64 = saveImageResult.AvatarBase64;
             course.CourseImageName = saveImageResult.AvatarName;
             course.DemoVideo = demoVideoName;
@@ -364,9 +363,6 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
 
             if (request.OrderByType == OrderByEnum.MinPrice)
                 expresion = expresion.OrderBy(x => x.CoursePrice);
-
-            if (request.OrderByType == OrderByEnum.MaxPrice)
-                expresion = expresion.OrderByDescending(x => x.CoursePrice);
 
             if (request.OrderByType == OrderByEnum.MaxPrice)
                 expresion = expresion.OrderByDescending(x => x.CoursePrice);

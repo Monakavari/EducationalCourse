@@ -103,7 +103,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         {
             var courseEpisodList = await _episodeRepository
                       .FetchIQueryableEntity()
-                      .Include(x => x.CourseId)
+                      .Include(x => x.Course)
                       .Where(x => x.CourseId == courseId)
                       .ToListAsync(cancellationToken);
 

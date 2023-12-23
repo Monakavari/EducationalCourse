@@ -8,7 +8,7 @@ namespace EducationalCourse.Domain.Entities
         {
             Children = new List<CourseGroup>();
             Courses = new List<Course>();
-            SubCourseGroups = new List<Course>();
+            SubCourseGroups = new List<CourseGroup>();
         }
         public string CourseGroupTitle { get; set; }
         public int? ParentId { get; set; }
@@ -18,7 +18,7 @@ namespace EducationalCourse.Domain.Entities
 
         public ICollection<CourseGroup> Children { get; set; }
         public ICollection<Course> Courses { get; set; }
-        public ICollection<Course> SubCourseGroups { get; set; }
+        public ICollection<CourseGroup> SubCourseGroups { get; set; }
 
         #endregion
     }
