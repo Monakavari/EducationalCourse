@@ -66,6 +66,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             }
             await _rolePermissionRepository.AddRangeAsync(rolePermissionList, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             return new ApiResult(true, ApiResultStatusCode.Success, "عملیات با موفقیت انجام شد.");
         }
 
@@ -115,7 +116,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         public async Task<bool> GrantPermission(int permissionId, CancellationToken cancellationToken)
         {
             var userId = _httpContextAccessor.GetUserId();
-            return await _permissionRepository.HasPermission(PermissionCodeEnum.AddRole, cancellationToken);
+            return await _permissionRepository.HasPermission(userId,PermissionCodeEnum.AddRole, cancellationToken);
         }
     }
 }

@@ -12,6 +12,6 @@ namespace EducationalCourse.Domain.Repository
 
         Task<int> GetPermissionId(PermissionCodeEnum code, CancellationToken cancellationToken);
 
-        Task<bool> HasPermission(PermissionCodeEnum code, CancellationToken cancellationToken);
+        Task<bool> HasPermission(int userId,PermissionCodeEnum code, CancellationToken cancellationToken);
     }
 }

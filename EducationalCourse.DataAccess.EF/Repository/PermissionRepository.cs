@@ -2,6 +2,7 @@
 using EducationalCourse.DataAccess.EF.Context;
 using EducationalCourse.DataAccess.EF.Repositories.Base;
 using EducationalCourse.Domain.Entities.Permission;
+using EducationalCourse.Domain.Models.Account;
 using EducationalCourse.Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -53,12 +54,19 @@ namespace EducationalCourse.DataAccess.EF.Repository
         }
 
         //******************************* HasPermission ******************************
-        public async Task<bool> HasPermission(PermissionCodeEnum code, CancellationToken cancellationToken)
+        public async Task<bool> HasPermission(int userId, PermissionCodeEnum code, CancellationToken cancellationToken)
         {
             return await _context.Permissions
-                .Where (x => x.PermissionCode == code)
-                .AnyAsync (cancellationToken);
+                    .Where(x => x.PermissionCode == code)
+                    .Include(x=>x.RolePermissions)
+                    .ThenInclude(x=>x.Role)
+                    .ThenInclude(x=>x.UserRoles)
+                    .Where(x => x.RolePermissions.Any(c => c.PermissionId == x.Id))
+                    .SelectMany(x => x.RolePermissions)
+                    .Select(c => c.Role)
+                    .SelectMany(x => x.UserRoles)
+                    .Where(x => x.UserId == userId)
+                    .AnyAsync(cancellationToken);
         }
-
     }
 }

@@ -12,6 +12,5 @@ namespace EducationalCourse.ApplicationService.Services.Contracts
         Task<ApiResult> EditRole(EditRoleDto request, CancellationToken cancellationToken);
 
         Task<ApiResult> AssignUserRole(AssignUserRoleDto request, CancellationToken cancellationToken);
-
     }
 }
