@@ -57,6 +57,8 @@ namespace EducationalCourse.IOC
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IUserCourseRepository, UserCourseRepository>();
             services.AddScoped<IDiscountRepository, DiscountRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
 
 
 
@@ -75,6 +77,8 @@ namespace EducationalCourse.IOC
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IUserCourseService, UserCourseService>();
             services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IPermissionService, PermissionService>();
 
 
             #endregion Rejester Servises

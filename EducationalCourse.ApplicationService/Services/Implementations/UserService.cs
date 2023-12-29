@@ -80,6 +80,9 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             if (user.Password != hashPassword)
                 throw new AppException("رمز عبور صحیح نمیباشد.");
 
+            if (!user.IsActive )
+                throw new AppException("کاربر فعال نمیباشد.");
+
             var token = JwtUtility.GenerateJwtToken(user, _siteSettings.TokenSettings);
             var loginResponseDto = new LoginResponseDto(user, token);
 

@@ -1,6 +1,8 @@
 ﻿using EducationalCourse.DataAccess.EF.Configurations;
 using EducationalCourse.Domain.Entities;
+using EducationalCourse.Domain.Entities.Account;
 using EducationalCourse.Domain.Entities.Order;
+using EducationalCourse.Domain.Entities.Permission;
 using EducationalCourse.Domain.Models.Account;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,8 +31,12 @@ namespace EducationalCourse.DataAccess.EF.Context
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<WalletTransaction> WalletTransactions { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
         public DbSet<Discount> Discounts { get; set; }
-       
+             
               
         #endregion DBSet
 

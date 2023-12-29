@@ -34,7 +34,7 @@ namespace EducationalCourse.DataAccess.EF.Configurations
 
             builder
                 .HasOne(x => x.SubCourseGroup)
-                .WithMany(x => x.Courses)
+                .WithMany(x => x.SubCourseGroups)
                 .HasForeignKey(x => x.SubCourseGroupId)
                 .OnDelete(DeleteBehavior.Restrict);
 

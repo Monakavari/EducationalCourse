@@ -1,4 +1,5 @@
 ﻿using EducationalCourse.Domain.Entities;
+using EducationalCourse.Domain.Entities.Account;
 using EducationalCourse.Domain.Entities.Order;
 using EducationalCourse.Domain.Models.Base;
 
@@ -13,6 +14,7 @@ namespace EducationalCourse.Domain.Models.Account
             Orders = new List<Order>();
             UserCourses=new List<UserCourse>();
             Wallets = new List<Wallet>();
+            UserRoles = new List<UserRole>();
 
         }
         public string FirstName { get; set; }
@@ -28,6 +30,7 @@ namespace EducationalCourse.Domain.Models.Account
         public ICollection<Order> Orders { get; set; }
         public ICollection<UserCourse> UserCourses { get; set; }
         public ICollection<Wallet> Wallets { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; }
 
 
     }

@@ -24,4 +24,9 @@
         Credit = 2, //واریز به حساب
         Deposit = 3,//برداشت از حساب
     }
+
+    public enum PermissionCodeEnum : int
+    {
+        AddRole = 1
+    }
 }

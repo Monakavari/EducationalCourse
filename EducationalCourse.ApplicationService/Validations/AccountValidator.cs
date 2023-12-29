@@ -1,11 +1,6 @@
 ﻿using EducationalCourse.Common.Dtos.User;
 using EducationalCourse.Framework.CustomException;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace EducationalCourse.ApplicationService.Validations
 {
@@ -53,7 +48,7 @@ namespace EducationalCourse.ApplicationService.Validations
                 if (request.UserName.Length != 11)
                     throw new AppException("تعداد مجاز ارقام یازده رقم می باشد.");
             }
-            else if (validateEmailRegex.IsMatch(request.UserName))
+            else if (!validateEmailRegex.IsMatch(request.UserName))
                 throw new AppException("فرمت ایمیل نامعتبر است.");
         }
 
