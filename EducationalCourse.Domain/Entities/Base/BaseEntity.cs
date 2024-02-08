@@ -6,7 +6,7 @@ namespace EducationalCourse.Domain.Models.Base
     {
         public BaseEntity()
         {
-            IsActive = false;
+            IsActive = true;
             IsDelete = false;
             CreateDate = DateTime.Now;
         }

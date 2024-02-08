@@ -24,7 +24,15 @@
         Credit = 2, //واریز به حساب
         Deposit = 3,//برداشت از حساب
     }
-
+    public enum DiscountUseType : int
+    {
+        Success = 1,
+        NotFound = 2,
+        Finished = 3,
+        Expired = 4,
+        NotStarted= 5,
+        Used=6
+    }
     public enum PermissionCodeEnum : int
     {
         AddRole = 1

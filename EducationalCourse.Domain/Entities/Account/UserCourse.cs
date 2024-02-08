@@ -1,9 +1,9 @@
 ﻿using EducationalCourse.Domain.Models.Account;
 using EducationalCourse.Domain.Models.Base;
 
-namespace EducationalCourse.Domain.Entities
+namespace EducationalCourse.Domain.Entities.Account
 {
-    public class UserCourse:BaseEntity
+    public class UserCourse : BaseEntity
     {
         public int UserId { get; set; }
         public User User { get; set; }

@@ -1,5 +1,5 @@
 ﻿using EducationalCourse.ApplicationService.Services.Contracts;
-using EducationalCourse.Domain.Entities;
+using EducationalCourse.Domain.Entities.Account;
 using EducationalCourse.Domain.Entities.Order;
 using EducationalCourse.Domain.ICommandRepositories.Base;
 using EducationalCourse.Domain.Repository;

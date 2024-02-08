@@ -18,6 +18,7 @@ namespace EducationalCourse.WebApi.Controllers
         }
 
         #endregion Constructor
+
         [HttpPost]
         public async Task<IActionResult> CreateComment(AddCommentDto request, CancellationToken cancellationToken = default)
         {

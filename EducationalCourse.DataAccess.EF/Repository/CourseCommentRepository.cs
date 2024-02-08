@@ -10,11 +10,11 @@ namespace EducationalCourse.DataAccess.EF.Repository
         #region Consteructor
 
         private readonly EducationalCourseContext _context;
-
-        #endregion Consteructor
         public CourseCommentRepository(EducationalCourseContext context) : base(context)
         {
             _context = context;
         }
+
+        #endregion Consteructor
     }
 }

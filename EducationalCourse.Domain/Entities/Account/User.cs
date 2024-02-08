@@ -15,6 +15,7 @@ namespace EducationalCourse.Domain.Models.Account
             UserCourses=new List<UserCourse>();
             Wallets = new List<Wallet>();
             UserRoles = new List<UserRole>();
+            UserDiscounts = new List<UserDiscount>();
 
         }
         public string FirstName { get; set; }
@@ -31,6 +32,7 @@ namespace EducationalCourse.Domain.Models.Account
         public ICollection<UserCourse> UserCourses { get; set; }
         public ICollection<Wallet> Wallets { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<UserDiscount> UserDiscounts { get; set; }
 
 
     }

@@ -1,4 +1,5 @@
-﻿using EducationalCourse.Domain.Entities.Order;
+﻿using EducationalCourse.Domain.Entities.Account;
+using EducationalCourse.Domain.Entities.Order;
 using EducationalCourse.Domain.Models.Account;
 using EducationalCourse.Domain.Models.Base;
 

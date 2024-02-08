@@ -1,4 +1,5 @@
 ﻿using EducationalCourse.DataAccess.EF.Configurations;
+using EducationalCourse.DataAccsess.EF.Configurations;
 using EducationalCourse.Domain.Entities;
 using EducationalCourse.Domain.Entities.Account;
 using EducationalCourse.Domain.Entities.Order;
@@ -36,14 +37,32 @@ namespace EducationalCourse.DataAccess.EF.Context
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Discount> Discounts { get; set; }
-             
-              
+        public DbSet<UserDiscount> UserDiscounts { get; set; }
+
+
         #endregion DBSet
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseConfiguration).Assembly);
-
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseCommentConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseEpisodeConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseGroupConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseLevelConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseStatusConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderDetailConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(RoleConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(RolePermissionConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserRoleConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PermissionConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(DiscountConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserDiscountConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserCourseConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(WalletConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(WalletTransactionConfiguration).Assembly);
+            
             //base.OnModelCreating(modelBuilder);
         }
     }

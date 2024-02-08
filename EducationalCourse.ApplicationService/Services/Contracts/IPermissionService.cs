@@ -13,7 +13,7 @@ namespace EducationalCourse.ApplicationService.Services.Contracts
         Task<ApiResult> EditPermission(EditPermissionDto request, CancellationToken cancellationToken);
         Task<int> GetPermissionIdByCode(PermissionCodeEnum code, CancellationToken cancellationToken);
 
-        Task<bool> GrantPermission(int permissionId, CancellationToken cancellationToken);
+        Task<bool> GrantPermission(PermissionCodeEnum code, CancellationToken cancellationToken);
         Task<ApiResult> AssignRolePermission(AssignRolePermissionDto request, CancellationToken cancellationToken);
 
     }

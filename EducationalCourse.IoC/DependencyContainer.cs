@@ -56,8 +56,11 @@ namespace EducationalCourse.IOC
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IUserCourseRepository, UserCourseRepository>();
+            services.AddScoped<IUserDiscountRepository, UserDiscountRepository>();
+            services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<IDiscountRepository, DiscountRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
 
 

@@ -113,10 +113,10 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         }
 
         //********************************* GrantPermission *********************************
-        public async Task<bool> GrantPermission(int permissionId, CancellationToken cancellationToken)
+        public async Task<bool> GrantPermission(PermissionCodeEnum code, CancellationToken cancellationToken)
         {
             var userId = _httpContextAccessor.GetUserId();
-            return await _permissionRepository.HasPermission(userId,PermissionCodeEnum.AddRole, cancellationToken);
+            return await _permissionRepository.HasPermission(userId, code, cancellationToken);
         }
     }
 }
