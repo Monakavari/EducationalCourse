@@ -19,7 +19,7 @@ namespace EducationalCourse.WebApi.Controllers
         #endregion Constructor
 
         [HttpPost]
-        public async Task<IActionResult> CreateVote(AddUserVoteDto request request, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CreateVote(AddUserVoteDto request , CancellationToken cancellationToken = default)
         {
             var result = await _courseVoteService.CreateVote(request, cancellationToken);
             return Ok(result);
