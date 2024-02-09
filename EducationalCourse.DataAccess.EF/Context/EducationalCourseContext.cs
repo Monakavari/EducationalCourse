@@ -38,6 +38,7 @@ namespace EducationalCourse.DataAccess.EF.Context
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<UserDiscount> UserDiscounts { get; set; }
+        public DbSet<CourseVote> CourseVotes { get; set; }
 
 
         #endregion DBSet
@@ -62,6 +63,7 @@ namespace EducationalCourse.DataAccess.EF.Context
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserCourseConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(WalletConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(WalletTransactionConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseVoteConfiguration).Assembly);
             
             //base.OnModelCreating(modelBuilder);
         }

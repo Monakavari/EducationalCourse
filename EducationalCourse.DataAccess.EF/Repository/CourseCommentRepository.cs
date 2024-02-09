@@ -19,5 +19,5 @@ namespace EducationalCourse.DataAccess.EF.Repository
 
         #endregion Consteructor
 
-          }
+    }
 }

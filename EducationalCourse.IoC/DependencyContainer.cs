@@ -62,6 +62,7 @@ namespace EducationalCourse.IOC
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<ICourseVoteRepository, CourseVoteRepository>();
 
 
 
@@ -82,6 +83,7 @@ namespace EducationalCourse.IOC
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IPermissionService, PermissionService>();
+            services.AddScoped<ICourseVoteService, CourseVoteService>();
 
 
             #endregion Rejester Servises
