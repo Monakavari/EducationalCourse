@@ -1,11 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EducationalCourse.Domain.Dtos.Course
+﻿namespace EducationalCourse.Domain.Dtos.Course
 {
     public class FilterCourseDto
     {
@@ -14,6 +7,7 @@ namespace EducationalCourse.Domain.Dtos.Course
         public int CoursePrice { get; set; }
         public string CourseImageBase64 { get; set; }
         public string CourseImageName { get; set; }
+        public string CreatDateDisplay { get; set; }
 
     }
 }

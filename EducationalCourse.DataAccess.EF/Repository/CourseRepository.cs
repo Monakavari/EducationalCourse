@@ -4,6 +4,7 @@ using EducationalCourse.Domain.Dtos.Course;
 using EducationalCourse.Domain.Entities;
 using EducationalCourse.Domain.Repository;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Immutable;
 
 namespace EducationalCourse.DataAccess.EF.Repository
 {
@@ -37,58 +38,33 @@ namespace EducationalCourse.DataAccess.EF.Repository
         }
 
         //************************************** GetAllCourse *****************************************
-        public async Task<List<FilterCourseDto>> GetAllCourse(string courseTitle, CancellationToken cancellationTokenn)
+        public async Task<List<Course>> GetAllCourse(string courseTitle, CancellationToken cancellationTokenn)
         {
-            var result = await _context.Courses
-                       .Where(x => x.CourseTitle.Contains(courseTitle))
-                       .Select(x => new FilterCourseDto
-                       {
-                           CourseTitle = x.CourseTitle,
-                           CoursePrice = x.CoursePrice,
-                           IsFreeCost = x.IsFreeCost,
-                           CourseImageBase64 = x.CourseImageBase64,
-                           CourseImageName = x.CourseImageName
-
-                       }).ToListAsync(cancellationTokenn);
-
-            return result;
+            return await _context.Courses
+                           .Where(x => x.CourseTitle
+                           .Contains(courseTitle))
+                           .ToListAsync(cancellationTokenn);
         }
 
         //************************************** GetLastCourses ****************************************
-        public async Task<List<FilterCourseDto>> GetLastCourses(CancellationToken cancellationToken)
+        public async Task<List<Course>> GetLastCourses(CancellationToken cancellationToken)
         {
-            var result = await _context.Courses
-                               .OrderByDescending(x => x.CreateDate).Take(5)
-                               .Select(x => new FilterCourseDto
-                               {
-                                   CourseTitle = x.CourseTitle,
-                                   CoursePrice = x.CoursePrice,
-                                   IsFreeCost = x.IsFreeCost,
-                                   CourseImageBase64 = x.CourseImageBase64,
-                                   CourseImageName = x.CourseImageName
-
-                               }).ToListAsync(cancellationToken);
-
-            return result;
+            return await _context.Courses
+                               .OrderByDescending(x => x.CreateDate)
+                               .Take(5)
+                               .ToListAsync(cancellationToken);
         }
 
         //************************************** GetPopularCourses *************************************
-        public async Task<List<FilterCourseDto>> GetPopularCourses(CancellationToken cancellationToken)
+        public async Task<List<Course>> GetPopularCourses(CancellationToken cancellationToken)
         {
-            var result = await _context.Courses
-                               .OrderByDescending(x => x.ViewCount).Take(5)
-                               .Select(x => new FilterCourseDto
-                               {
-                                   CourseTitle = x.CourseTitle,
-                                   CoursePrice = x.CoursePrice,
-                                   IsFreeCost = x.IsFreeCost,
-                                   CourseImageBase64 = x.CourseImageBase64,
-                                   CourseImageName = x.CourseImageName
-
-                               }).ToListAsync(cancellationToken);
-
-            return result;
-
+            return await _context.Courses
+                         .Include(x => x.OrderDetails)
+                         .Where(x => x.OrderDetails.Any())
+                         .OrderByDescending(x => x.OrderDetails.Count())
+                       //.OrderByDescending(x => x.ViewCount).Take(5)
+                         .Take(8)
+                         .ToListAsync(cancellationToken);
         }
 
         //************************************** ExistCourseName *************************************
@@ -100,7 +76,5 @@ namespace EducationalCourse.DataAccess.EF.Repository
 
             return result;
         }
-
-
     }
 }

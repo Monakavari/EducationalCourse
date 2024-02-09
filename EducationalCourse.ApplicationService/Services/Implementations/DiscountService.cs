@@ -9,7 +9,6 @@ using EducationalCourse.Framework;
 using EducationalCourse.Framework.CustomException;
 using EducationalCourse.Framework.Extensions;
 using Microsoft.AspNetCore.Http;
-using System.Threading;
 
 namespace EducationalCourse.ApplicationService.Services.Implementations
 {
@@ -44,7 +43,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         public async Task<ApiResult> UseDiscount(UseDiscountDto request, CancellationToken cancellationToken)
         {
             var discount = await _discountRepository.GetDiscountByCode(request.DiscountCode, cancellationToken);
-            await CheckDiscountType(discount, cancellationToken);
+            await CheckDiscountUseType(discount, cancellationToken);
             await AssignDiscountToOrder(request, discount, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -126,7 +125,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             };
             await _userDiscountRepository.AddAsync(userDiscount, cancellationToken);
         }
-        private async Task<DiscountUseType> CheckDiscountType(Discount discount, CancellationToken cancellationToken)
+        private async Task<DiscountUseType> CheckDiscountUseType(Discount discount, CancellationToken cancellationToken)
         {
             if (discount == null)
                 return DiscountUseType.NotFound;
@@ -140,7 +139,7 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             if (discount.UsableCount != null && discount.UsableCount < 1)
                 return DiscountUseType.Finished;
 
-            if (await _userDiscountRepository.CheckUserDiscount(_userId, discount.Id, cancellationToken) != false)
+            if (await _userDiscountRepository.CheckUserDiscount(_userId, discount.Id, cancellationToken))
                 return DiscountUseType.Used;
 
             return DiscountUseType.Success;

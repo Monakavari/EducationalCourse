@@ -1,4 +1,5 @@
 ﻿using EducationalCourse.ApplicationService.Services.Contracts;
+using EducationalCourse.Common.Dtos.Comment;
 using EducationalCourse.Common.Dtos.Course;
 using EducationalCourse.Domain.Dtos.Course;
 using EducationalCourse.WebApi.Infrastructure;
@@ -40,5 +41,11 @@ namespace EducationalCourse.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetComments(GetAllCommentsDto request, CancellationToken cancellationToken = default)
+        {
+            var result = await _commentService.GetComments(request, cancellationToken);
+            return Ok(result);
+        }
     }
 }

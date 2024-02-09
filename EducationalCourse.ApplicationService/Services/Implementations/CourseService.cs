@@ -5,6 +5,7 @@ using EducationalCourse.Common.Enums;
 using EducationalCourse.Common.Extensions;
 using EducationalCourse.Domain.Dtos;
 using EducationalCourse.Domain.Dtos.Course;
+using EducationalCourse.Domain.Dtos.Wallet;
 using EducationalCourse.Domain.Entities;
 using EducationalCourse.Domain.ICommandRepositories.Base;
 using EducationalCourse.Domain.Repository;
@@ -104,15 +105,42 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
             if (!string.IsNullOrWhiteSpace(courseTitle) && courseTitle.Length < 4)
                 throw new AppException("تعداد کاراکتر وارد شده باید بیشتر باشد");
 
-            var result = await _courseRepository.GetAllCourse(courseTitle, cancellationToken);
+            var result = new List<FilterCourseDto>();
+            var courseList = await _courseRepository.GetAllCourse(courseTitle, cancellationToken);
 
+            foreach (var item in courseList)
+            {
+                result.Add(new FilterCourseDto
+                {
+                    CourseTitle = item.CourseTitle,
+                    CoursePrice = item.CoursePrice,
+                    IsFreeCost = item.IsFreeCost,
+                    CourseImageBase64 = item.CourseImageBase64,
+                    CourseImageName = item.CourseImageName,
+                    CreatDateDisplay = item.CreateDate.ToShamsi()
+                });
+            }
             return new ApiResult<List<FilterCourseDto>>(true, ApiResultStatusCode.Success, result, "عملیات با موفقیت انجام شد");
         }
 
         //******************************** GetLastCourses ***********************************
         public async Task<ApiResult<List<FilterCourseDto>>> GetLastCourses(CancellationToken cancellationToken)
         {
-            var result = await _courseRepository.GetLastCourses(cancellationToken);
+            var result = new List<FilterCourseDto>();
+            var courseList = await _courseRepository.GetLastCourses(cancellationToken);
+
+            foreach (var item in courseList)
+            {
+                result.Add(new FilterCourseDto
+                {
+                    CourseTitle = item.CourseTitle,
+                    CoursePrice = item.CoursePrice,
+                    IsFreeCost = item.IsFreeCost,
+                    CourseImageBase64 = item.CourseImageBase64,
+                    CourseImageName = item.CourseImageName,
+                    CreatDateDisplay = item.CreateDate.ToShamsi(),
+                });
+            }
 
             if (result is null)
                 throw new AppException("دوره ای یافت نشد");
@@ -123,8 +151,21 @@ namespace EducationalCourse.ApplicationService.Services.Implementations
         //******************************** GetPopularCourses ********************************
         public async Task<ApiResult<List<FilterCourseDto>>> GetPopularCourses(CancellationToken cancellationToken)
         {
+            var result = new List<FilterCourseDto>();
+            var courseList = await _courseRepository.GetPopularCourses(cancellationToken);
 
-            var result = await _courseRepository.GetPopularCourses(cancellationToken);
+            foreach (var item in courseList)
+            {
+                result.Add(new FilterCourseDto
+                {
+                    CourseTitle = item.CourseTitle,
+                    CoursePrice = item.CoursePrice,
+                    IsFreeCost = item.IsFreeCost,
+                    CourseImageBase64 = item.CourseImageBase64,
+                    CourseImageName = item.CourseImageName,
+                    CreatDateDisplay = item.CreateDate.ToShamsi(),
+                });
+            }
 
             if (result is null)
                 throw new AppException("دوره ای یافت نشد");
